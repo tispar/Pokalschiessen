@@ -7,3 +7,4 @@ Software zur live-Ansicht von Ranglisten während Pokalschießen des Schützenve
 * Anzeige der Top-10 in den einzelnen Wettbewerben
 * Such-Funktion für Teilnehmer bzw. Teams
 * ggfs eine Admin-Ebene zur Implementierung weiterer Wettbewerbe 
+
