@@ -14,4 +14,4 @@ root.maxsize(width=1280, height= 720)
 label1 = tk.Label(root, text="Hallo Welt")
 label1.pack()
 
-root.mainloop()
+root.mainloop() 
