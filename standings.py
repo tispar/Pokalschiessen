@@ -25,4 +25,3 @@ PreisButton.pack(pady=50, padx=50)
 root.mainloop() 
 
 #Hauptmenü
-
