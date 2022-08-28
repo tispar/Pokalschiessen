@@ -135,3 +135,6 @@ dmypy.json
 data/
 notes/
 drivers/
+backup/
+ui/
+build-ui-Desktop_Qt_6_3_1_MinGW_64_bit-Debug/
