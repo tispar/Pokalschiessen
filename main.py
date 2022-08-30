@@ -21,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #check if backupfile exists
         #get maxdate from backupfile
 
-        path = 'data/oldiepokal.log'
+        path = 'data/OUT-JSONInterface.log'
         self.ui.PfadEdit.setText(path)
         # data = bf.read_logfile2(path)
         # lastUpdate = data['ShotDateTime'].max()
@@ -66,6 +66,8 @@ class MainWindow(QtWidgets.QMainWindow):
         print("preis_click() called")
         path = self.ui.PfadEdit.text()
         data = bf.read_logfile2(path)
+        lastUpdate = data['ShotDateTime'].max()
+        self.ui.time.setText(lastUpdate)
         os.makedirs('backup', exist_ok=True)  
 
         data.to_csv('backup/full.csv')  
@@ -95,6 +97,8 @@ class MainWindow(QtWidgets.QMainWindow):
         path = self.ui.PfadEdit.text()
         data = bf.read_logfile2(path)
         os.makedirs('backup', exist_ok=True)  
+        lastUpdate = data['ShotDateTime'].max()
+        self.ui.time.setText(lastUpdate)
 
         data.to_csv('backup/full.csv')  
         self.ui.HerrenBestmann.setRowCount(0)

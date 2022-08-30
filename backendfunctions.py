@@ -1,4 +1,5 @@
 import json
+from operator import index
 import pandas as pd
 
 def read_logfile(path):
@@ -67,7 +68,7 @@ def oldiepokal(data):
 
     #formatting for display
     #best: Position, Full Name, id, Full Value , Teiler
-    best.drop(best.columns[[0,1,2,3,5,7,8,11,15]], axis=1, inplace=True)
+    #best.drop(best.columns[[0,1,2,3,5,7,8,11,15]], axis=1, inplace=True)
     best = best[['Shooter.Firstname', 'Shooter.Lastname', 'Shooter.Identification', 'FullValue', 'Distance']]
     best.index += 1
     best.rename(columns={'Shooter.Firstname' : 'Vorname', 'Shooter.Lastname' : 'Nachname', 'Shooter.Identification' : 'id' , 'FullValue' : 'Scheiben' , 'Distance' : 'Teiler'  }, inplace=True)
@@ -80,8 +81,8 @@ def oldiepokal(data):
 def bestmann(data):
 
     #Herren
-    hcomp = data[data['MenuItem.MenuPointName'] == 'Jubilumspokal']
-    hcomp = hcomp[hcomp['DiscType'] == 'KKA'] 
+    hcomp = data[data['MenuItem.MenuPointName'] == 'KK Jubilumspokal KK']
+    hcomp = hcomp[hcomp['DiscType'] == 'KK'] 
     hshooters = hcomp['Shooter.Identification'].unique()
 
     if hcomp.shape[0] != 0:
@@ -93,16 +94,18 @@ def bestmann(data):
 
         hbest.sort_values(['DecValue', 'Distance'], ascending=[False,True], inplace=True)
 
-        hbest.drop(hbest.columns[[0,1,2,3,5,7,8,11,15]], axis=1, inplace=True)
+        #hbest.drop(hbest.columns[[0,1,2,3,5,7,8,11,15]], axis=1, inplace=True)
         hbest = hbest[['Shooter.Firstname', 'Shooter.Lastname', 'Shooter.Identification', 'FullValue', 'Distance']]
         hbest.index += 1
         hbest.rename(columns={'Shooter.Firstname' : 'Vorname', 'Shooter.Lastname' : 'Nachname', 'Shooter.Identification' : 'id' , 'FullValue' : 'Scheiben' , 'Distance' : 'Teiler'  }, inplace=True)
+        hbest.reset_index(inplace=True, drop=True)
+        hbest.index += 1
     else:
         hbest = pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Id', 'Scheibenanzahl', 'Teiler' ])
 
     #Damen
-    dcomp = data[data['MenuItem.MenuPointName'] == 'Damenjubilumspokal']
-    dcomp = dcomp[dcomp['DiscType'] == 'KKA'] 
+    dcomp = data[data['MenuItem.MenuPointName'] == 'KK Damenjubilumspokal KK']
+    dcomp = dcomp[dcomp['DiscType'] == 'KK'] 
     dshooters = dcomp['Shooter.Identification'].unique()
 
     if dcomp.shape[0] != 0:
@@ -114,7 +117,7 @@ def bestmann(data):
 
         dbest.sort_values(['DecValue', 'Distance'], ascending=[False,True], inplace=True)
 
-        dbest.drop(dbest.columns[[0,1,2,3,5,7,8,11,15]], axis=1, inplace=True)
+        #dbest.drop(dbest.columns[[0,1,2,3,5,7,8,11,15]], axis=1, inplace=True)
         dbest = dbest[['Shooter.Firstname', 'Shooter.Lastname', 'Shooter.Identification', 'FullValue', 'Distance']]
         dbest.index += 1
         dbest.rename(columns={'Shooter.Firstname' : 'Vorname', 'Shooter.Lastname' : 'Nachname', 'Shooter.Identification' : 'id' , 'FullValue' : 'Scheiben' , 'Distance' : 'Teiler'  }, inplace=True)
@@ -122,8 +125,8 @@ def bestmann(data):
         dbest = pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Id', 'Scheibenanzahl', 'Teiler' ])
 
     #Jugend
-    jcomp = data[data['MenuItem.MenuPointName'] == 'Jugen Jubilumspokal']
-    jcomp = jcomp[jcomp['DiscType'] == 'LGA'] 
+    jcomp = data[data['MenuItem.MenuPointName'] == 'LG Jugend Jubilumspokal LG']
+    jcomp = jcomp[jcomp['DiscType'] == 'LG'] 
     jshooters = jcomp['Shooter.Identification'].unique()
 
     if jcomp.shape[0] !=0 :
@@ -135,7 +138,7 @@ def bestmann(data):
 
         jbest.sort_values(['DecValue', 'Distance'], ascending=[False,True], inplace=True)
 
-        jbest.drop(dbest.columns[[0,1,2,3,5,7,8,11,15]], axis=1, inplace=True)
+        #jbest.drop(dbest.columns[[0,1,2,3,5,7,8,11,15]], axis=1, inplace=True)
         jbest = jbest[['Shooter.Firstname', 'Shooter.Lastname', 'Shooter.Identification', 'FullValue', 'Distance']]
         jbest.index += 1
         jbest.rename(columns={'Shooter.Firstname' : 'Vorname', 'Shooter.Lastname' : 'Nachname', 'Shooter.Identification' : 'id' , 'FullValue' : 'Scheiben' , 'Distance' : 'Teiler'  }, inplace=True)
@@ -146,8 +149,8 @@ def bestmann(data):
 
 
 def preisschiessen(data):
-    comp = data[data['MenuItem.MenuPointName'] == 'Preisschiessen']
-    comp = comp[comp['DiscType'] == 'KKA']
+    comp = data[data['MenuItem.MenuPointName'] == 'KK Preisschiessen KK']
+    comp = comp[comp['DiscType'] == 'KK']
     shooters = comp['Shooter.Identification'].unique()
     if comp.shape[0] == 0:
         return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Id', 'Scheibenanzahl', 'Teiler' ])
@@ -156,14 +159,18 @@ def preisschiessen(data):
     for shooter in shooters:
         df = comp[comp['Shooter.Identification'] == shooter]
         max = df.loc[df['Distance'].idxmax()]
+        
         max['DecValue'] = df['DecValue'].nlargest(2).sum()
-        max['Distance'] = df['Distance'].nsmallest(2).sum()
+        max['FullValue'] = df['FullValue'].nlargest(2).sum()
+        max['Distance'] = round(df['Distance'].nsmallest(2).sum(), 2)
+
         price = pd.concat([price, max.to_frame().transpose()], axis=0, ignore_index=True)
     
-    price.sort_values(['DecValue', 'Distance'], ascending=[False,True], inplace=True)
+    price.sort_values(['Distance'], ascending=[True], inplace=True)
 
-    price.drop(price.columns[[0,1,2,3,5,7,8,11,15]], axis=1, inplace=True)
+    #price.drop(price.columns[[0,1,2,3,5,7,8,11,15]], axis=1, inplace=True)
     price = price[['Shooter.Firstname', 'Shooter.Lastname', 'Shooter.Identification', 'FullValue', 'Distance']]
+    price.reset_index(inplace=True, drop=True)
     price.index += 1
     price.rename(columns={'Shooter.Firstname' : 'Vorname', 'Shooter.Lastname' : 'Nachname', 'Shooter.Identification' : 'id' , 'FullValue' : 'Scheiben' , 'Distance' : 'Teiler'  }, inplace=True)
 
