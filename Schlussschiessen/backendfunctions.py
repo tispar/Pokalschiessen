@@ -177,3 +177,28 @@ def preisschiessen(data):
     price.rename(columns={'Shooter.Firstname' : 'Vorname', 'Shooter.Lastname' : 'Nachname', 'Shooter.Identification' : 'id' , 'FullValue' : 'Scheiben' , 'Distance' : 'Teiler'  }, inplace=True)
 
     return price
+
+def Teiler_One(data, zielteiler, wettbewerb, disc):
+    comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Shooter.Identification'].unique()
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Teiler', 'Differenz' ])
+
+    res = pd.DataFrame()
+
+    for shooter in shooters:
+        df = comp[comp['Shooter.Identification'] == shooter]
+        df['Difference'] = df['Distance'].apply(lambda x: round(abs(x-int(zielteiler)),1))
+        best = df.loc[df['Distance'].idxmin()]
+
+        res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
+
+    res = res[['Shooter.Firstname', 'Shooter.Lastname', 'Distance', 'Difference']]
+    res.sort_values(['Difference'] , ascending=True, inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+
+    return res
+    
