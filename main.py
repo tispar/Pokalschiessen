@@ -8,6 +8,8 @@ from ui.mainwindow import Ui_MainWindow
 # Bootup Routines
 app = QtWidgets.QApplication(sys.argv)
 
+#print("Bootup")
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -30,9 +32,27 @@ class MainWindow(QtWidgets.QMainWindow):
         # data.to_csv('backup/full.csv')  
 
         # clicks
+        self.ui.onlinemode.clicked.connect(self.set_onlinepath)
+        self.ui.localmode.clicked.connect(self.set_localpath)
+        self.ui.debugmode.clicked.connect(self.enable_pfad_edit)
         self.ui.DemoButton.clicked.connect(self.demo_click)
         self.ui.PreisButton.clicked.connect(self.preis_click)
         self.ui.BestmannButton.clicked.connect(self.bestmann_click)
+
+    def set_onlinepath(self):
+        self.ui.PfadEdit.setText('//DESKTOP-6RH80LH/Jsonlive/OUT-JSONInterface.log')
+        self.demo_click
+        self.preis_click
+        self.bestmann_click
+
+    def set_localpath(self):
+        self.ui.PfadEdit.setText('data/OUT-JSONInterface.log')
+        self.demo_click
+        self.preis_click
+        self.bestmann_click
+
+    def enable_pfad_edit(self):
+        self.ui.PfadEdit.setEnabled(True)
     
     def demo_click(self):
         print("Click")
@@ -154,5 +174,7 @@ class MainWindow(QtWidgets.QMainWindow):
 window = MainWindow()
 
 window.show()
+
+#print("Loop here ?")
 
 sys.exit(app.exec_())

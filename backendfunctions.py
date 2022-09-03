@@ -1,5 +1,6 @@
 import json
 from operator import index
+from posixpath import split
 import pandas as pd
 
 def read_logfile(path):
@@ -16,6 +17,7 @@ def read_logfile(path):
 def read_logfile2(path):
     shots = pd.DataFrame()
     with open(path, 'r', encoding='utf-8', errors='ignore') as log:
+    #with open(path, 'r', encoding='ISO 8859-1', errors='ignore') as log:
         lines = log.readlines()
         for line in reversed(lines):
             element = pd.json_normalize(json.loads(line), record_path=['Objects'])
@@ -24,7 +26,7 @@ def read_logfile2(path):
                 shots = pd.concat([shots, element], axis=0, ignore_index=True)
 
     shots.sort_values(['ShotDateTime'], ascending=[True], inplace=True)
-
+    shots['Shooter.Lastname'] = shots['Shooter.Lastname'].apply(lambda x: x.split(' ')[1] if (len(x.split(' ')) > 1) else x)
     return shots[shots['IsHot'] == True].reset_index(drop=True)
 
 
