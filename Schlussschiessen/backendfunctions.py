@@ -1,6 +1,6 @@
 import json
-#from operator import index
-#from posixpath import split
+from operator import index
+from posixpath import split
 import pandas as pd
 
 def read_logfile(path):
@@ -184,14 +184,15 @@ def Teiler_One(data, zielteiler, wettbewerb, disc):
     shooters = comp['Shooter.Identification'].unique()
 
     if comp.shape[0] == 0:
-        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Teiler', 'Differenz' ])
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler' ])
 
     res = pd.DataFrame()
 
     for shooter in shooters:
         df = comp[comp['Shooter.Identification'] == shooter]
-        df['Difference'] = df['Distance'].apply(lambda x: round(abs(x-int(zielteiler)),1))
-        best = df.loc[df['Distance'].idxmin()]
+        #df['Difference'] = df['Distance'].apply(lambda x: round(abs(x-int(zielteiler)),1))
+        df['Difference'] = round( abs(df['Distance'] - zielteiler), 1)
+        best = df.loc[df['Difference'].idxmin()]
 
         res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
 
@@ -201,4 +202,50 @@ def Teiler_One(data, zielteiler, wettbewerb, disc):
     res.index += 1
 
     return res
-    
+
+def Teiler_All(data, zielteiler, wettbewerb, disc):
+    comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Shooter.Identification'].unique()
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler' ])
+
+    res = pd.DataFrame()
+
+    for shooter in shooters:
+        df = comp[comp['Shooter.Identification'] == shooter]
+        best = df.loc[df['Distance'].idxmax()]
+        best['Distance'] = int(df['Distance'].sum())
+        best['Difference'] = round( abs(best['Distance'] - zielteiler) , 1)
+
+        res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
+
+    res = res[['Shooter.Firstname', 'Shooter.Lastname', 'Distance', 'Difference']]
+    res.sort_values(['Difference'] , ascending=True, inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+
+    return res
+
+def Best_Shot(data, wettbewerb, disc):
+    comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Shooter.Identification'].unique()
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler' ])
+
+    res = pd.DataFrame()
+    for shooter in shooters:
+        df = comp[comp['Shooter.Identification'] == shooter]
+        best = df.loc[df['Distance'].idxmin()]
+
+        res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
+
+    res = res[['Shooter.Firstname', 'Shooter.Lastname', 'DecValue', 'Distance']]
+    res.sort_values(['Distance'] , ascending=True, inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+
+    return res
