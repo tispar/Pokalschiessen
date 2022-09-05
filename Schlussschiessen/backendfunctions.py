@@ -14,6 +14,8 @@ def read_logfile(path):
     
     return shots[shots['IsHot'] == True]
 
+
+#Read the JSON File from bottom to top
 def read_logfile2(path):
     shots = pd.DataFrame()
     with open(path, 'r', encoding='utf-8', errors='ignore') as log:
@@ -178,6 +180,10 @@ def preisschiessen(data):
 
     return price
 
+
+# ----------------------------------------------------------------
+# TEILER - FUNKTIONEN
+
 def Teiler_One(data, zielteiler, wettbewerb, disc):
     comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
     comp = comp[comp['DiscType'] == disc]
@@ -228,6 +234,10 @@ def Teiler_All(data, zielteiler, wettbewerb, disc):
 
     return res
 
+# ----------------------------------------------------------------
+# BESTE SCHÜSSE 
+
+# Rangliste für besten einzelnen Schuss im Wettbewerb
 def Best_Shot(data, wettbewerb, disc):
     comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
     comp = comp[comp['DiscType'] == disc]
@@ -249,3 +259,20 @@ def Best_Shot(data, wettbewerb, disc):
     res.index += 1
 
     return res
+
+#Beste Zehnen 
+def best_tens(data, wettbewerb, disc, anz):
+    comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Shooter.Identification'].unique() 
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler', 'bester Teiler' , '2. bester Teiler' ])
+
+    res = pd.DataFrame()
+    for shooter in shooters:
+        df = comp[(comp['Shooter.Identification'] == shooter) & (comp['FullValue'] == 10)]
+        if df.shape[0]>= anz:
+
+        #pass if len(df) < anz 
+    #TODO continue here
