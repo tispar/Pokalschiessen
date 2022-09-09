@@ -92,7 +92,26 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.HaspaTable.setItem(row,4, QtWidgets.QTableWidgetItem(line[4]))
 
         # Wettbewerb 4 KK-Auflage
-        
+        WettbewerbKK = "KKA KK Preisschieen KKA"
+        discKK = "KKA"
+        anzKK = 2
+
+        self.ui.KKAuflageTable.setRowCount(0)
+        resKK = bf.best_tens(DataRes,WettbewerbKK,discKK,anzKK)
+        resKK.to_csv('backup/kkauflage.csv', header=False)
+        with open('backup/kkauflage.csv', 'r', newline='') as file:
+            reader = csv.reader(file, delimiter=',')
+            for line in reader:
+                row = self.ui.KKAuflageTable.rowCount()
+                self.ui.KKAuflageTable.insertRow(row)
+
+                self.ui.KKAuflageTable.setItem(row,0, QtWidgets.QTableWidgetItem(line[0]))
+                self.ui.KKAuflageTable.setItem(row,1, QtWidgets.QTableWidgetItem(line[1]))
+                self.ui.KKAuflageTable.setItem(row,2, QtWidgets.QTableWidgetItem(line[2]))
+                self.ui.KKAuflageTable.setItem(row,3, QtWidgets.QTableWidgetItem(line[3]))
+                self.ui.KKAuflageTable.setItem(row,4, QtWidgets.QTableWidgetItem(line[4]))
+
+
         # Wettbewerb 5 LG - Auflage
         WettbewerbLG = "LGA LG Preisschieen LGA"
         discLG = "LGA"
