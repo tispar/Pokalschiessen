@@ -261,18 +261,48 @@ def Best_Shot(data, wettbewerb, disc):
     return res
 
 #Beste Zehnen 
-def best_tens(data, wettbewerb, disc, anz):
+# def best_tens(data, wettbewerb, disc, anz):
+#     comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+#     comp = comp[comp['DiscType'] == disc]
+#     shooters = comp['Shooter.Identification'].unique() 
+
+#     if comp.shape[0] == 0:
+#         return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler', 'bester Teiler' , '2. bester Teiler' ])
+
+#     res = pd.DataFrame()
+#     for shooter in shooters:
+#         df = comp[(comp['Shooter.Identification'] == shooter) & (comp['FullValue'] == 10)]
+#         if df.shape[0]>= anz:
+#             # Bring it all together
+    
+#     #TODO continue here
+
+
+def BestXShots(data, wettbewerb, disc, anz):
     comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
     comp = comp[comp['DiscType'] == disc]
-    shooters = comp['Shooter.Identification'].unique() 
-
+    shooters = comp['Shooter.Identification'].unique()
     if comp.shape[0] == 0:
-        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler', 'bester Teiler' , '2. bester Teiler' ])
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler' ])
 
     res = pd.DataFrame()
     for shooter in shooters:
-        df = comp[(comp['Shooter.Identification'] == shooter) & (comp['FullValue'] == 10)]
-        if df.shape[0]>= anz:
+        df = comp[comp['Shooter.Identification'] == shooter]
+        
+        if df.shape[0] >= anz:
+            max = df.loc[df['Distance'].idxmax()]
+            
+            max['DecValue'] = round(df['DecValue'].nlargest(anz).sum(), 1)
+            max['Distance'] = round(df['Distance'].nsmallest(anz).sum(), 2)
 
-        #pass if len(df) < anz 
-    #TODO continue here
+        res = pd.concat([res, max.to_frame().transpose()], axis=0, ignore_index=True)
+    
+    res.sort_values(['Distance'], ascending=[True], inplace=True)
+
+    #price.drop(price.columns[[0,1,2,3,5,7,8,11,15]], axis=1, inplace=True)
+    res = res[['Shooter.Firstname', 'Shooter.Lastname', 'DecValue', 'Distance']]
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+    #price.rename(columns={'Shooter.Firstname' : 'Vorname', 'Shooter.Lastname' : 'Nachname', 'Shooter.Identification' : 'id' , 'FullValue' : 'Scheiben' , 'Distance' : 'Teiler'  }, inplace=True)
+
+    return res

@@ -28,6 +28,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.localmode.clicked.connect(self.set_localpath)
         self.ui.debugmode.clicked.connect(self.enable_pfad_edit)
         self.ui.DamenAct.clicked.connect(self.damen_click)
+        self.ui.MixedAct.clicked.connect(self.mixend_click)
 
     def set_onlinepath(self):
         self.ui.PfadEdit.setText('//DESKTOP-6RH80LH/Jsonlive/OUT-JSONInterface.log')
@@ -39,41 +40,42 @@ class MainWindow(QtWidgets.QMainWindow):
     def enable_pfad_edit(self):
         self.ui.PfadEdit.setEnabled(True)
 
-    def damen_click(self):
+    
+    def mixend_click(self):
         path = self.ui.PfadEdit.text()
         data = bf.read_logfile2(path)
         lastUpdate = data['ShotDateTime'].max()
         self.ui.time.setText(lastUpdate)
         os.makedirs('backup', exist_ok=True)  
         data.to_csv('backup/full.csv')
-
-        #Wettbewerb 1
-        #Table : DamenvizeTable
-        WettbewerbDamenVize = 'LGA Damenvizeorden LGA'
-        discDamenVize = 'LGA'
-        zielteilerDamenVize = 1107
-        self.ui.DamenvizeTable.setRowCount(0)
         DataRes = pd.read_csv('backup/full.csv', index_col=0)
-        resDamenVize = bf.Teiler_All(DataRes, zielteilerDamenVize, WettbewerbDamenVize, discDamenVize)
-        resDamenVize.to_csv('backup/DVize.csv', header=False)
-        with open('backup/DVize.csv', 'r', newline='') as file:
+        
+
+        # Wettbewerb 1 Ehrenscheibe (beste 10)
+        WettbewerbVogel = "KKA Ehrenpreis KKA"
+        discVogel = "KKA"
+
+        self.ui.EhrenScheibeTable.setRowCount(0)
+        res = bf.Best_Shot(DataRes,WettbewerbVogel,discVogel)
+        res.to_csv('backup/ehrenscheibe.csv', header=False)
+        with open('backup/ehrenscheibe.csv', 'r', newline='') as file:
             reader = csv.reader(file, delimiter=',')
             for line in reader:
-                row = self.ui.DamenvizeTable.rowCount()
-                self.ui.DamenvizeTable.insertRow(row)
+                row = self.ui.EhrenScheibeTable.rowCount()
+                self.ui.EhrenScheibeTable.insertRow(row)
 
-                self.ui.DamenvizeTable.setItem(row,0, QtWidgets.QTableWidgetItem(line[0]))
-                self.ui.DamenvizeTable.setItem(row,1, QtWidgets.QTableWidgetItem(line[1]))
-                self.ui.DamenvizeTable.setItem(row,2, QtWidgets.QTableWidgetItem(line[2]))
-                self.ui.DamenvizeTable.setItem(row,3, QtWidgets.QTableWidgetItem(line[3]))
-                self.ui.DamenvizeTable.setItem(row,4, QtWidgets.QTableWidgetItem(line[4]))
-
-
-        #Wettbewerb 2
+                self.ui.EhrenScheibeTable.setItem(row,0, QtWidgets.QTableWidgetItem(line[0]))
+                self.ui.EhrenScheibeTable.setItem(row,1, QtWidgets.QTableWidgetItem(line[1]))
+                self.ui.EhrenScheibeTable.setItem(row,2, QtWidgets.QTableWidgetItem(line[2]))
+                self.ui.EhrenScheibeTable.setItem(row,3, QtWidgets.QTableWidgetItem(line[3]))
+                self.ui.EhrenScheibeTable.setItem(row,4, QtWidgets.QTableWidgetItem(line[4]))
+        # Wettbewerb 2 Ehrenpreise (beste 10en in Serie)
+        # 
+        # Wettbewerb 3 Haspa Orden
         WettbewerbHaspa = "KKA Haspa Offenne Klasse KKA"
         discHaspa = "KKA"
         zielteilerHaspa = 380
-        print('check')
+
         self.ui.HaspaTable.setRowCount(0)
         resHaspa = bf.Teiler_One(DataRes,zielteilerHaspa,WettbewerbHaspa,discHaspa)
         resHaspa.to_csv('backup/haspa.csv', header=False)
@@ -88,7 +90,60 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.HaspaTable.setItem(row,2, QtWidgets.QTableWidgetItem(line[2]))
                 self.ui.HaspaTable.setItem(row,3, QtWidgets.QTableWidgetItem(line[3]))
                 self.ui.HaspaTable.setItem(row,4, QtWidgets.QTableWidgetItem(line[4]))
-        #Wettbewerb 3
+
+        # Wettbewerb 4 KK-Auflage
+        
+        # Wettbewerb 5 LG - Auflage
+        WettbewerbLG = "LGA LG Preisschieen LGA"
+        discLG = "LGA"
+        anzLG = 3
+
+        self.ui.LGAuflageTable.setRowCount(0)
+        resLGA = bf.BestXShots(DataRes,WettbewerbLG,discLG,anzLG)
+        resLGA.to_csv('backup/LGAuflage.csv', header=False)
+        with open('backup/LGAuflage.csv', 'r', newline='') as file:
+            reader = csv.reader(file, delimiter=',')
+            for line in reader:
+                row = self.ui.LGAuflageTable.rowCount()
+                self.ui.LGAuflageTable.insertRow(row)
+
+                self.ui.LGAuflageTable.setItem(row,0, QtWidgets.QTableWidgetItem(line[0]))
+                self.ui.LGAuflageTable.setItem(row,1, QtWidgets.QTableWidgetItem(line[1]))
+                self.ui.LGAuflageTable.setItem(row,2, QtWidgets.QTableWidgetItem(line[2]))
+                self.ui.LGAuflageTable.setItem(row,3, QtWidgets.QTableWidgetItem(line[3]))
+                self.ui.LGAuflageTable.setItem(row,4, QtWidgets.QTableWidgetItem(line[4]))
+
+
+    def damen_click(self):
+        path = self.ui.PfadEdit.text()
+        data = bf.read_logfile2(path)
+        lastUpdate = data['ShotDateTime'].max()
+        self.ui.time.setText(lastUpdate)
+        os.makedirs('backup', exist_ok=True)  
+        data.to_csv('backup/full.csv')
+        DataRes = pd.read_csv('backup/full.csv', index_col=0)
+
+        #Wettbewerb 1
+        #Table : DamenvizeTable
+        WettbewerbDamenVize = 'LGA Damenvizeorden LGA'
+        discDamenVize = 'LGA'
+        zielteilerDamenVize = 1107
+        self.ui.DamenvizeTable.setRowCount(0)
+        resDamenVize = bf.Teiler_All(DataRes, zielteilerDamenVize, WettbewerbDamenVize, discDamenVize)
+        resDamenVize.to_csv('backup/DVize.csv', header=False)
+        with open('backup/DVize.csv', 'r', newline='') as file:
+            reader = csv.reader(file, delimiter=',')
+            for line in reader:
+                row = self.ui.DamenvizeTable.rowCount()
+                self.ui.DamenvizeTable.insertRow(row)
+
+                self.ui.DamenvizeTable.setItem(row,0, QtWidgets.QTableWidgetItem(line[0]))
+                self.ui.DamenvizeTable.setItem(row,1, QtWidgets.QTableWidgetItem(line[1]))
+                self.ui.DamenvizeTable.setItem(row,2, QtWidgets.QTableWidgetItem(line[2]))
+                self.ui.DamenvizeTable.setItem(row,3, QtWidgets.QTableWidgetItem(line[3]))
+                self.ui.DamenvizeTable.setItem(row,4, QtWidgets.QTableWidgetItem(line[4]))
+
+        #Wettbewerb 2
         WettbewerbVogel = "KKA Damen Vogelteil KKA"
         discVogel = "KKA"
 
@@ -110,7 +165,5 @@ class MainWindow(QtWidgets.QMainWindow):
 window = MainWindow()
 
 window.show()
-
-#print("Loop here ?")
 
 sys.exit(app.exec_())
