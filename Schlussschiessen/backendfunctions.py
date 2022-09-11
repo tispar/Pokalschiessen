@@ -316,3 +316,38 @@ def BestXShots(data, wettbewerb, disc, anz):
     res.index += 1
 
     return res
+
+
+def BestTenSeries(data, wettbewerb, disc):
+    comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Shooter.Identification'].unique()
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler' ])
+
+    res = pd.DataFrame()
+    for shooter in shooters:
+        df = comp[comp['Shooter.Identification'] == shooter]
+        shots = df['Count'].max() // 2
+
+        best = -1
+        teiler = 10000
+        s = (-1)
+        for i in range(0,shots+1) :
+            serie = df[(df['Count'] == i*2 ) | (df['Count'] == (i*2)+1)]
+            if (serie['FullValue'].sum() == 20) & (serie['DecValue'].sum() > best):
+                s = i
+            i = i +1
+
+        if s != (-1):
+            t = df[(df['Count'] == s*2 ) | (df['Count'] == (s*2)+1)].sum()
+            bestseries = t
+            res = pd.concat([res, bestseries.to_frame().transpose()], axis=0, ignore_index=True)
+
+    res.sort_values(['DecValue'], ascending=[False], inplace=True)
+
+    res = res[['Shooter.Firstname', 'Shooter.Lastname', 'DecValue', 'Distance']]
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+
+    return res

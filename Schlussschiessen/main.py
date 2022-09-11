@@ -18,7 +18,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.setWindowTitle("Schlussschiessen 2022 - Rönneburg -- stable beta-Version")
+        self.setWindowTitle("Schlussschiessen 2022 - Rönneburg")
 
         path = 'data/OUT-JSONInterface.log'
         self.ui.PfadEdit.setText(path)
@@ -28,7 +28,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.localmode.clicked.connect(self.set_localpath)
         self.ui.debugmode.clicked.connect(self.enable_pfad_edit)
         self.ui.DamenAct.clicked.connect(self.damen_click)
-        self.ui.MixedAct.clicked.connect(self.mixend_click)
+        self.ui.MixedAct.clicked.connect(self.mixed_click)
+        self.ui.HerrenAct.clicked.connect(self.herren_click)
 
     def set_onlinepath(self):
         self.ui.PfadEdit.setText('//DESKTOP-6RH80LH/Jsonlive/OUT-JSONInterface.log')
@@ -40,8 +41,35 @@ class MainWindow(QtWidgets.QMainWindow):
     def enable_pfad_edit(self):
         self.ui.PfadEdit.setEnabled(True)
 
-    
-    def mixend_click(self):
+    def herren_click(self):
+        path = self.ui.PfadEdit.text()
+        data = bf.read_logfile2(path)
+        lastUpdate = data['ShotDateTime'].max()
+        self.ui.time.setText(lastUpdate)
+        os.makedirs('backup', exist_ok=True)  
+        data.to_csv('backup/full.csv')
+        DataRes = pd.read_csv('backup/full.csv', index_col=0)   
+
+        WettbewerbVogel = "KKA Vogelteil KKA"
+        discVogel = "KKA"
+
+        self.ui.VogelteilHTable.setRowCount(0)
+        resHaspa = bf.Best_Shot(DataRes,WettbewerbVogel,discVogel)
+        resHaspa.to_csv('backup/haspa.csv', header=False)
+        with open('backup/haspa.csv', 'r', newline='') as file:
+            reader = csv.reader(file, delimiter=',')
+            for line in reader:
+                row = self.ui.VogelteilHTable.rowCount()
+                self.ui.VogelteilHTable.insertRow(row)
+
+                self.ui.VogelteilHTable.setItem(row,0, QtWidgets.QTableWidgetItem(line[0]))
+                self.ui.VogelteilHTable.setItem(row,1, QtWidgets.QTableWidgetItem(line[1]))
+                self.ui.VogelteilHTable.setItem(row,2, QtWidgets.QTableWidgetItem(line[2]))
+                self.ui.VogelteilHTable.setItem(row,3, QtWidgets.QTableWidgetItem(line[3]))
+                self.ui.VogelteilHTable.setItem(row,4, QtWidgets.QTableWidgetItem(line[4]))     
+
+
+    def mixed_click(self):
         path = self.ui.PfadEdit.text()
         data = bf.read_logfile2(path)
         lastUpdate = data['ShotDateTime'].max()
@@ -70,7 +98,21 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.EhrenScheibeTable.setItem(row,3, QtWidgets.QTableWidgetItem(line[3]))
                 self.ui.EhrenScheibeTable.setItem(row,4, QtWidgets.QTableWidgetItem(line[4]))
         # Wettbewerb 2 Ehrenpreise (beste 10en in Serie)
-        # 
+        self.ui.EhrenPreisTable.setRowCount(0)
+        res = bf.BestTenSeries(DataRes,WettbewerbVogel,discVogel)
+        res.to_csv('backup/ehrenpreis.csv', header=False)
+        with open('backup/ehrenpreis.csv', 'r', newline='') as file:
+            reader = csv.reader(file, delimiter=',')
+            for line in reader:
+                row = self.ui.EhrenPreisTable.rowCount()
+                self.ui.EhrenPreisTable.insertRow(row)
+
+                self.ui.EhrenPreisTable.setItem(row,0, QtWidgets.QTableWidgetItem(line[0]))
+                self.ui.EhrenPreisTable.setItem(row,1, QtWidgets.QTableWidgetItem(line[1]))
+                self.ui.EhrenPreisTable.setItem(row,2, QtWidgets.QTableWidgetItem(line[2]))
+                self.ui.EhrenPreisTable.setItem(row,3, QtWidgets.QTableWidgetItem(line[3]))
+                self.ui.EhrenPreisTable.setItem(row,4, QtWidgets.QTableWidgetItem(line[4]))
+
         # Wettbewerb 3 Haspa Orden
         WettbewerbHaspa = "KKA Haspa Offenne Klasse KKA"
         discHaspa = "KKA"
