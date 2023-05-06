@@ -1,6 +1,6 @@
 import json
-#from operator import index
-#from posixpath import split
+from operator import index
+from posixpath import split
 import pandas as pd
 
 def read_logfile(path):
@@ -14,6 +14,8 @@ def read_logfile(path):
     
     return shots[shots['IsHot'] == True]
 
+
+#Read the JSON File from bottom to top
 def read_logfile2(path):
     shots = pd.DataFrame()
     with open(path, 'r', encoding='utf-8', errors='ignore') as log:
@@ -177,3 +179,175 @@ def preisschiessen(data):
     price.rename(columns={'Shooter.Firstname' : 'Vorname', 'Shooter.Lastname' : 'Nachname', 'Shooter.Identification' : 'id' , 'FullValue' : 'Scheiben' , 'Distance' : 'Teiler'  }, inplace=True)
 
     return price
+
+
+# ----------------------------------------------------------------
+# TEILER - FUNKTIONEN #
+
+def Teiler_One(data, zielteiler, wettbewerb, disc):
+    comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Shooter.Identification'].unique()
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler' ])
+
+    res = pd.DataFrame()
+
+    for shooter in shooters:
+        df = comp[comp['Shooter.Identification'] == shooter]
+        #df['Difference'] = df['Distance'].apply(lambda x: round(abs(x-int(zielteiler)),1))
+        df['Difference'] = round( abs(df['Distance'] - zielteiler), 1)
+        best = df.loc[df['Difference'].idxmin()]
+
+        res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
+
+    res = res[['Shooter.Firstname', 'Shooter.Lastname', 'Distance', 'Difference']]
+    res.sort_values(['Difference'] , ascending=True, inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+
+    return res
+
+def Teiler_All(data, zielteiler, wettbewerb, disc):
+    comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Shooter.Identification'].unique()
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler' ])
+
+    res = pd.DataFrame()
+
+    for shooter in shooters:
+        df = comp[comp['Shooter.Identification'] == shooter]
+        best = df.loc[df['Distance'].idxmax()]
+        best['Distance'] = int(df['Distance'].sum())
+        best['Difference'] = round( abs(best['Distance'] - zielteiler) , 1)
+
+        res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
+
+    res = res[['Shooter.Firstname', 'Shooter.Lastname', 'Distance', 'Difference']]
+    res.sort_values(['Difference'] , ascending=True, inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+
+    return res
+
+# ----------------------------------------------------------------
+# BESTE SCHÜSSE 
+
+# Rangliste für besten einzelnen Schuss im Wettbewerb #
+def Best_Shot(data, wettbewerb, disc):
+    comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Shooter.Identification'].unique()
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler' ])
+
+    res = pd.DataFrame()
+    for shooter in shooters:
+        df = comp[comp['Shooter.Identification'] == shooter]
+        best = df.loc[df['Distance'].idxmin()]
+
+        res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
+
+    res = res[['Shooter.Firstname', 'Shooter.Lastname', 'DecValue', 'Distance']]
+    res.sort_values(['Distance'] , ascending=True, inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+
+    return res
+
+#Beste Zehnen 
+def best_tens(data, wettbewerb, disc, anz):
+    comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Shooter.Identification'].unique() 
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler', 'bester Teiler' , '2. bester Teiler' ])
+
+    res = pd.DataFrame()
+    for shooter in shooters:
+        df = comp[(comp['Shooter.Identification'] == shooter) & (comp['FullValue'] == 10)]
+        if df.shape[0]>= anz:
+            # Bring it all together
+            max = df.loc[df['Distance'].idxmin()]
+            
+            max['DecValue'] = round(df['DecValue'].nlargest(anz).sum(), 1)
+            max['Distance'] = round(df['Distance'].nsmallest(anz).sum(), 2)
+    
+            res = pd.concat([res, max.to_frame().transpose()], axis=0, ignore_index=True)
+    
+    res.sort_values(['Distance'], ascending=[True], inplace=True)
+
+    res = res[['Shooter.Firstname', 'Shooter.Lastname', 'DecValue', 'Distance']]
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+
+    return res
+
+
+def BestXShots(data, wettbewerb, disc, anz):
+    comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Shooter.Identification'].unique()
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler' ])
+
+    res = pd.DataFrame()
+    for shooter in shooters:
+        df = comp[comp['Shooter.Identification'] == shooter]
+        
+        if df.shape[0] >= anz:
+            max = df.loc[df['Distance'].idxmin()]
+            
+            max['DecValue'] = round(df['DecValue'].nlargest(anz).sum(), 1)
+            max['Distance'] = round(df['Distance'].nsmallest(anz).sum(), 2)
+
+        res = pd.concat([res, max.to_frame().transpose()], axis=0, ignore_index=True)
+    
+    res.sort_values(['Distance'], ascending=[True], inplace=True)
+
+    res = res[['Shooter.Firstname', 'Shooter.Lastname', 'DecValue', 'Distance']]
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+
+    return res
+
+
+def BestTenSeries(data, wettbewerb, disc):
+    comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Shooter.Identification'].unique()
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Position', 'Vorname', 'Nachname', 'Ringzahl', 'Teiler' ])
+
+    res = pd.DataFrame()
+    for shooter in shooters:
+        df = comp[comp['Shooter.Identification'] == shooter]
+        shots = df['Count'].max() // 2
+
+        best = -1
+        teiler = 10000
+        s = (-1)
+        for i in range(0,shots+1) :
+            serie = df[(df['Count'] == i*2 ) | (df['Count'] == (i*2)+1)]
+            if (serie['FullValue'].sum() == 20) & (serie['DecValue'].sum() > best):
+                s = i
+            i = i +1
+
+        if s != (-1):
+            t = df[(df['Count'] == s*2 ) | (df['Count'] == (s*2)+1)].sum()
+            bestseries = t
+            res = pd.concat([res, bestseries.to_frame().transpose()], axis=0, ignore_index=True)
+
+    res.sort_values(['DecValue'], ascending=[False], inplace=True)
+
+    res = res[['Shooter.Firstname', 'Shooter.Lastname', 'DecValue', 'Distance']]
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+
+    return res

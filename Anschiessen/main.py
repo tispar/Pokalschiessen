@@ -27,9 +27,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.onlinemode.clicked.connect(self.set_onlinepath)
         self.ui.localmode.clicked.connect(self.set_localpath)
         self.ui.debugmode.clicked.connect(self.enable_pfad_edit)
-        self.ui.DamenAct.clicked.connect(self.damen_click)
-        self.ui.MixedAct.clicked.connect(self.mixed_click)
-        self.ui.HerrenAct.clicked.connect(self.herren_click)
+        self.ui.Act.clicked.connect(self.act_click)
+        
 
     def set_onlinepath(self):
         self.ui.PfadEdit.setText('//DESKTOP-6RH80LH/Jsonlive/OUT-JSONInterface.log')
@@ -53,7 +52,7 @@ class MainWindow(QtWidgets.QMainWindow):
         WettbewerbVogel = "KKA Vogelteil KKA"
         discVogel = "KKA"
 
-        self.ui.VogelteilHTable.setRowCount(0)
+        self.ui..setRowCount(0)
         resHaspa = bf.Best_Shot(DataRes,WettbewerbVogel,discVogel)
         resHaspa.to_csv('backup/haspa.csv', header=False)
         with open('backup/haspa.csv', 'r', newline='') as file:
@@ -69,7 +68,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.VogelteilHTable.setItem(row,4, QtWidgets.QTableWidgetItem(line[4]))     
 
 
-    def mixed_click(self):
+    def act_click(self):
         path = self.ui.PfadEdit.text()
         data = bf.read_logfile2(path)
         lastUpdate = data['ShotDateTime'].max()
@@ -79,14 +78,14 @@ class MainWindow(QtWidgets.QMainWindow):
         DataRes = pd.read_csv('backup/full.csv', index_col=0)
         
 
-        # Wettbewerb 1 Ehrenscheibe (beste 10)
-        WettbewerbVogel = "KKA Ehrenpreis KKA"
+        # Wettbewerb 1 Pokal (beste 10 Schuss)
+        WettbewerbVogel = "KKA Pokal KKA"
         discVogel = "KKA"
 
-        self.ui.EhrenScheibeTable.setRowCount(0)
-        res = bf.Best_Shot(DataRes,WettbewerbVogel,discVogel)
-        res.to_csv('backup/ehrenscheibe.csv', header=False)
-        with open('backup/ehrenscheibe.csv', 'r', newline='') as file:
+        self.ui.P.setRowCount(0)
+        res = bf.BestTenSeries(DataRes,WettbewerbVogel,discVogel)
+        res.to_csv('backup/pokal.csv', header=False)
+        with open('backup/pokal.csv', 'r', newline='') as file:
             reader = csv.reader(file, delimiter=',')
             for line in reader:
                 row = self.ui.EhrenScheibeTable.rowCount()

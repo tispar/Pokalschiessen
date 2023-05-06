@@ -182,7 +182,7 @@ def preisschiessen(data):
 
 
 # ----------------------------------------------------------------
-# TEILER - FUNKTIONEN
+# TEILER - FUNKTIONEN #
 
 def Teiler_One(data, zielteiler, wettbewerb, disc):
     comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
@@ -237,7 +237,7 @@ def Teiler_All(data, zielteiler, wettbewerb, disc):
 # ----------------------------------------------------------------
 # BESTE SCHÜSSE 
 
-# Rangliste für besten einzelnen Schuss im Wettbewerb
+# Rangliste für besten einzelnen Schuss im Wettbewerb #
 def Best_Shot(data, wettbewerb, disc):
     comp = data[data['MenuItem.MenuPointName'] == wettbewerb]
     comp = comp[comp['DiscType'] == disc]
