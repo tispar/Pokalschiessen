@@ -132,13 +132,13 @@ while True:
         df1 = bd.Vorgabe(data,'KKA KK-DamenKniginnen Orden KKA','KKA',1999.0)
         df2 = bd.Vorgabe(data,'KKA KK-Damen Jubi Orden KKA','KKA',2023.0)
         df3 =  bd.Best_Shot(data,'KKA Damen Vogelteil KKA','KKA')
-        df4 = placeholder_df
+        df4 = bd.Best_Shots(data,'KKA KK Auflage KKA','KKA',2)
         df5 = bd.Best_Shot(data,'KKA KK-Bundesorden KKA','KKA')
         df6 = bd.Vorgabe(data,'KKA Damen Vogelteil KKA','KKA',380.0)
         df7 = placeholder_df
         df8 = placeholder_df
-        df9 = placeholder_df
-        df10 = placeholder_df
+        df9 = bd.Best_Shots(data,'LGA LG Auflage LGA','LGA',3)
+        df10 = bd.Vorgabe(data,'KKA KK-Halsbandorden Dieter KKA','KKA',509.0)
         df11 = placeholder_df
         df12 = bd.Vorgabe(data,'LGA Mafia Pokal LGA','LGA',777.0)
         if page == 1:
@@ -149,6 +149,7 @@ while True:
             window['-COMP 3 TEXT-'].update(comp3)
             window['-TABLE 3-'].update(values=df3.values.tolist())
             window['-COMP 4 TEXT-'].update(comp4)
+            window['-TABLE 4-'].update(values=df4.values.tolist())
             window['-COMP 5 TEXT-'].update(comp5)
             window['-TABLE 5-'].update(values=df5.values.tolist())
             window['-COMP 6 TEXT-'].update(comp6)
@@ -157,7 +158,9 @@ while True:
             window['-COMP 1 TEXT-'].update(comp7)
             window['-COMP 2 TEXT-'].update(comp8)
             window['-COMP 3 TEXT-'].update(comp9)
+            window['-TABLE 3-'].update(values=df9.values.tolist())
             window['-COMP 4 TEXT-'].update(comp10)
+            window['-TABLE 4-'].update(values=df10.values.tolist())
             window['-COMP 5 TEXT-'].update(comp11)
             window['-COMP 6 TEXT-'].update(comp12)
             window['-TABLE 6-'].update(values=df12.values.tolist())
@@ -189,17 +192,17 @@ while True:
 
     if event == '-SEITE 2-' and page != 2:
         window['-COMP 1 TEXT-'].update(comp7)
-        window['-TABLE 1-'].update(values= placeholder_df2.values.tolist())
+        window['-TABLE 1-'].update(values= df7.values.tolist())
         window['-COMP 2 TEXT-'].update(comp8)
-        window['-TABLE 2-'].update(values= placeholder_df2.values.tolist())
+        window['-TABLE 2-'].update(values= df8.values.tolist())
         window['-COMP 3 TEXT-'].update(comp9)
-        window['-TABLE 3-'].update(values= placeholder_df2.values.tolist())
+        window['-TABLE 3-'].update(values= df9.values.tolist())
         window['-COMP 4 TEXT-'].update(comp10)
-        window['-TABLE 4-'].update(values= placeholder_df2.values.tolist())
+        window['-TABLE 4-'].update(values= df10.values.tolist())
         window['-COMP 5 TEXT-'].update(comp11)
-        window['-TABLE 5-'].update(values= placeholder_df2.values.tolist())
+        window['-TABLE 5-'].update(values= df11.values.tolist())
         window['-COMP 6 TEXT-'].update(comp12)
-        window['-TABLE 6-'].update(values= placeholder_df2.values.tolist())
+        window['-TABLE 6-'].update(values= df12.values.tolist())
         window.refresh()
         page = 2
 
