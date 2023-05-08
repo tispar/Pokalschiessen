@@ -154,10 +154,10 @@ while True:
             window['-COMP 5 TEXT-'].update(comp11)
             window['-COMP 6 TEXT-'].update(comp12)
         zeit = time.gmtime()
-        window['-TIME-'].update(str((zeit.tm_hour+2)) +':'+str(zeit.tm_min))
+        window['-TIME-'].update(str((zeit.tm_hour+2)) +':'+str(zeit.tm_min)) ##TODO bei min < 10 eine 0 anfügen
         window.refresh()
 
-    if event == '-SEITE 2-' and page == 1:
+    if event == '-SEITE 2-' and page != 2:
         window['-COMP 1 TEXT-'].update(comp7)
         window['-TABLE 1-'].update(values= placeholder_df2.values.tolist())
         window['-COMP 2 TEXT-'].update(comp8)
@@ -173,7 +173,7 @@ while True:
         window.refresh()
         page = 2
 
-    if event == '-SEITE 1-' and page == 2:
+    if event == '-SEITE 1-' and page != 1:
         window['-COMP 1 TEXT-'].update(comp1)
         window['-TABLE 1-'].update(values=df1.values.tolist())
         window['-COMP 2 TEXT-'].update(comp2)
@@ -181,6 +181,7 @@ while True:
         window['-COMP 3 TEXT-'].update(comp3)
         window['-TABLE 3-'].update(values=df3.values.tolist())
         window['-COMP 4 TEXT-'].update(comp4)
+        window['-TABLE 4-'].update(values=df4.values.tolist())
         window['-COMP 5 TEXT-'].update(comp5)
         window['-TABLE 5-'].update(values=df5.values.tolist())
         window['-COMP 6 TEXT-'].update(comp6)
