@@ -132,8 +132,15 @@ while True:
         df1 = bd.Vorgabe(data,'KKA KK-DamenKniginnen Orden KKA','KKA',1999.0)
         df2 = bd.Vorgabe(data,'KKA KK-Damen Jubi Orden KKA','KKA',2023.0)
         df3 =  bd.Best_Shot(data,'KKA Damen Vogelteil KKA','KKA')
+        df4 = placeholder_df
         df5 = bd.Best_Shot(data,'KKA KK-Bundesorden KKA','KKA')
         df6 = bd.Vorgabe(data,'KKA Damen Vogelteil KKA','KKA',380.0)
+        df7 = placeholder_df
+        df8 = placeholder_df
+        df9 = placeholder_df
+        df10 = placeholder_df
+        df11 = placeholder_df
+        df12 = bd.Vorgabe(data,'LGA Mafia Pokal LGA','LGA',777.0)
         if page == 1:
             window['-COMP 1 TEXT-'].update(comp1)
             window['-TABLE 1-'].update(values=df1.values.tolist())
@@ -153,25 +160,16 @@ while True:
             window['-COMP 4 TEXT-'].update(comp10)
             window['-COMP 5 TEXT-'].update(comp11)
             window['-COMP 6 TEXT-'].update(comp12)
+            window['-TABLE 6-'].update(values=df12.values.tolist())
         zeit = time.gmtime()
-        window['-TIME-'].update(str((zeit.tm_hour+2)) +':'+str(zeit.tm_min)) ##TODO bei min < 10 eine 0 anfügen
+        hour = str((zeit.tm_hour+2))
+        if len(hour) < 2:
+            hour = '0'+hour
+        minute = str(zeit.tm_min)
+        if len(minute) < 2:
+            minute = '0'+minute
+        window['-TIME-'].update(hour +':'+ minute)
         window.refresh()
-
-    if event == '-SEITE 2-' and page != 2:
-        window['-COMP 1 TEXT-'].update(comp7)
-        window['-TABLE 1-'].update(values= placeholder_df2.values.tolist())
-        window['-COMP 2 TEXT-'].update(comp8)
-        window['-TABLE 2-'].update(values= placeholder_df2.values.tolist())
-        window['-COMP 3 TEXT-'].update(comp9)
-        window['-TABLE 3-'].update(values= placeholder_df2.values.tolist())
-        window['-COMP 4 TEXT-'].update(comp10)
-        window['-TABLE 4-'].update(values= placeholder_df2.values.tolist())
-        window['-COMP 5 TEXT-'].update(comp11)
-        window['-TABLE 5-'].update(values= placeholder_df2.values.tolist())
-        window['-COMP 6 TEXT-'].update(comp12)
-        window['-TABLE 6-'].update(values= placeholder_df2.values.tolist())
-        window.refresh()
-        page = 2
 
     if event == '-SEITE 1-' and page != 1:
         window['-COMP 1 TEXT-'].update(comp1)
@@ -188,6 +186,22 @@ while True:
         window['-TABLE 6-'].update(values=df6.values.tolist())
         window.refresh()
         page = 1
+
+    if event == '-SEITE 2-' and page != 2:
+        window['-COMP 1 TEXT-'].update(comp7)
+        window['-TABLE 1-'].update(values= placeholder_df2.values.tolist())
+        window['-COMP 2 TEXT-'].update(comp8)
+        window['-TABLE 2-'].update(values= placeholder_df2.values.tolist())
+        window['-COMP 3 TEXT-'].update(comp9)
+        window['-TABLE 3-'].update(values= placeholder_df2.values.tolist())
+        window['-COMP 4 TEXT-'].update(comp10)
+        window['-TABLE 4-'].update(values= placeholder_df2.values.tolist())
+        window['-COMP 5 TEXT-'].update(comp11)
+        window['-TABLE 5-'].update(values= placeholder_df2.values.tolist())
+        window['-COMP 6 TEXT-'].update(comp12)
+        window['-TABLE 6-'].update(values= placeholder_df2.values.tolist())
+        window.refresh()
+        page = 2
 
 ## END
 window.close()

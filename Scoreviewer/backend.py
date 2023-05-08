@@ -20,20 +20,20 @@ def read_logfile(path):
                            'Shooter.Identification' : 'Startnummer',
                            'MenuItem.MenuPointName' : 'Wettbewerb'
     },inplace=True)
-    shots['Name'] = shots['Vorname']+ ' ' + shots['Nachname']
+    shots['Name'] = shots['Vorname']+ ' ' + shots['Nachname'].str.split(' ', 1).str[1]
     shots = shots[['ShotDateTime','Name','Startnummer','Range','Wettbewerb','Count','FullValue','DecValue','Teiler','DiscType']]
     shots.reset_index(inplace=True, drop=True)
     shots.index += 1
     return shots
 
-
+## bester Schuss
 def Best_Shot(data, wettbewerb, disc):
     comp = data[data['Wettbewerb'] == wettbewerb]
     comp = comp[comp['DiscType'] == disc]
     shooters = comp['Startnummer'].unique()
 
     if comp.shape[0] == 0:
-        return pd.DataFrame(columns=['Position', 'Name', 'Ringzahl', 'Teiler' ])
+        return pd.DataFrame(columns=['Platz', 'Name', 'Ringzahl', 'Teiler' ])
 
     res = pd.DataFrame()
     for shooter in shooters:
@@ -51,6 +51,10 @@ def Best_Shot(data, wettbewerb, disc):
 
     return res
 
+## beste Schüsse
+    #TODO
+
+## Vorgabe
 def Vorgabe(data,name,disctype,zielteiler):
     comp = data[data['Wettbewerb'] == name]
     comp = comp[comp['DiscType'] == disctype]
@@ -74,5 +78,11 @@ def Vorgabe(data,name,disctype,zielteiler):
     res.index += 1
     res['Platz'] = res.index
     res = res[['Platz','Name', 'Abstand']]
-
+    # TODO Hide top 3
+    if name == 'LGA Mafia Pokal LGA':
+        res.loc[res['Platz'] <= 3, 'Name'] = '???'
+        
     return res
+
+## Beste Serie
+    #TODO
