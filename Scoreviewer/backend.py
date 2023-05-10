@@ -8,8 +8,6 @@ def read_logfile(path):
     with open(path, 'r', encoding='utf8', errors='ignore') as log:
         for line in log:
             element = pd.json_normalize(json.loads(line), record_path=['Objects'])
-            #if len(element.columns) > 32:
-            #    element.drop(element.columns[[1,2,3,4,7,8,9,14,15,16,18,19,20,21,22,26,30,32,33]], axis=1, inplace=True)
             shots = pd.concat([shots, element], axis=0, ignore_index=True)
     
     shots = shots[shots['IsHot'] == True]
@@ -21,7 +19,7 @@ def read_logfile(path):
                            'MenuItem.MenuPointName' : 'Wettbewerb'
     },inplace=True)
     shots['Name'] = shots['Vorname']+ ' ' + shots['Nachname'].str.split(' ', 1).str[1]
-    shots = shots[['ShotDateTime','Name','Startnummer','Range','Wettbewerb','Count','FullValue','DecValue','Teiler','DiscType']]
+    shots = shots[['ShotDateTime','Name','Startnummer','Range','Wettbewerb','Run','Count','FullValue','DecValue','Teiler','DiscType']]
     shots.reset_index(inplace=True, drop=True)
     shots.index += 1
     return shots
@@ -143,4 +141,7 @@ def Best_Tens(data, wettbewerb, disc, anzahl):
     return res
 
 ## Ehrenpreise
+    # TODO
+
+## Beste Ringzahl
     # TODO

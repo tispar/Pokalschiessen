@@ -2,6 +2,7 @@ import pandas as pd
 import PySimpleGUI as sg
 import time 
 import backend as bd
+import datetime as dt
 
 path = 'OUT-JSONInterface.log'
 
@@ -10,6 +11,12 @@ path = 'OUT-JSONInterface.log'
 ###################################
 
 event_name = 'Schützenfest 2023'
+now = dt.datetime.now()
+nowstring = now.strftime("%H:%M")
+updatetime = 5 #in minutes
+update= now + dt.timedelta(minutes=1)
+updatestring = update.strftime("%H:%M")
+
 ## Seite 1
 comp1 = 'Ehrenscheibe'
 comp2 = 'Ehrenpreisscheibe'
@@ -197,7 +204,7 @@ while True:
     if event in ('-EXIT-',sg.WIN_CLOSED):
         break
 
-    if event == '-REFRESH-':
+    if event == '-REFRESH-'
         ## informing the user
         window['-COMP 1 TEXT-'].update('Update läuft')
         window['-COMP 2 TEXT-'].update('Update läuft')
@@ -314,14 +321,11 @@ while True:
             window['-COMP 8 TEXT-'].update(comp32)
             window['-TABLE 8-'].update(values=df32.values.tolist())
 
-        zeit = time.gmtime()
-        hour = str((zeit.tm_hour+2))
-        if len(hour) < 2:
-            hour = '0'+hour
-        minute = str(zeit.tm_min)
-        if len(minute) < 2:
-            minute = '0'+minute
-        window['-TIME-'].update(hour +':'+ minute)
+        now = dt.datetime.now()
+        nowstring = now.strftime("%H:%M")
+        window['-TIME-'].update(nowstring)
+        update= dt.datetime.now() + dt.timedelta(minutes=5)
+        updatestring = update.strftime("%H:%M")
         window.refresh()
 
     if event == '-SEITE 1-' and page != 1:
