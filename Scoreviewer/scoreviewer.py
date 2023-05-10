@@ -5,20 +5,11 @@ import backend as bd
 
 path = 'OUT-JSONInterface.log'
 
-## Setting initialisation values
+###################################
+## Setting initialisation values ##
+###################################
+
 event_name = 'Schützenfest 2023'
-# comp1 = 'Königinnen Orden'
-# comp2 = 'Damen Jubiläums Orden'
-# comp3 = 'Damen Vogelteil'
-# comp4 = 'KK Auflage'
-# comp5 = 'Bundesorden'
-# comp6 = 'Haspa-Orden'
-# comp7 = 'Zapf-Orden'
-# comp8 = 'Vogelteil'
-# comp9 = 'LG Auflage'
-# comp10 = 'Halsband Orden'
-# comp11 = 'Ehrenpreis'
-# comp12 = 'Mafia Pokal'
 ## Seite 1
 comp1 = 'Ehrenscheibe'
 comp2 = 'Ehrenpreisscheibe'
@@ -100,17 +91,19 @@ df30 = placeholder_df
 df31 = placeholder_df
 df32 = placeholder_df
 
-## Setting the layout
+########################
+## Setting the layout ##
+########################
 layout = [
     [sg.Text('Willkommen zum '+ event_name, font='Calibri 28', expand_x=True, justification='center', pad=((10,10),(10,30)))],
     [sg.Button('Seite 1',key='-SEITE 1-',pad=((10,10),(10,30)))
      ,sg.Button('Seite 2',key='-SEITE 2-',pad=((10,10),(10,30)))
      ,sg.Button('Seite 3',key='-SEITE 3-',pad=((10,10),(10,30)))
      ,sg.Button('Seite 4',key='-SEITE 4-',pad=((10,10),(10,30)))],
-    [sg.Text(comp1,key='-COMP 1 TEXT-', font='Calibri 20', expand_x=True, justification='center')
-     ,sg.Text(comp2,key='-COMP 2 TEXT-', font='Calibri 20', expand_x=True, justification='center')
-     ,sg.Text(comp3,key='-COMP 3 TEXT-', font='Calibri 20', expand_x=True, justification='center')
-     ,sg.Text(comp4,key='-COMP 4 TEXT-', font='Calibri 20', expand_x=True, justification='center')],
+    [sg.Text(comp1,key='-COMP 1 TEXT-', size=(25, 1), font='Calibri 20', expand_x=True, justification='center')
+     ,sg.Text(comp2,key='-COMP 2 TEXT-',size=(25, 1), font='Calibri 20', expand_x=True, justification='center')
+     ,sg.Text(comp3,key='-COMP 3 TEXT-', size=(25, 1), font='Calibri 20', expand_x=True, justification='center')
+     ,sg.Text(comp4,key='-COMP 4 TEXT-', size=(25, 1), font='Calibri 20', expand_x=True, justification='center')],
     [sg.Table(values=placeholder_df.values.tolist(),
                      headings=placeholder_df.columns.tolist(),
                      max_col_width=25,
@@ -147,10 +140,10 @@ layout = [
                      key= '-TABLE 4-' ,
                      font='Calibri 12',
                      pad=((25,20),(10,30)))],
-    [sg.Text(comp5,key='-COMP 5 TEXT-', font='Calibri 20', expand_x=True, justification='center')
-     ,sg.Text(comp6,key='-COMP 6 TEXT-', font='Calibri 20', expand_x=True, justification='center')
-     ,sg.Text(comp7,key='-COMP 7 TEXT-', font='Calibri 20', expand_x=True, justification='center')
-     ,sg.Text(comp8,key='-COMP 8 TEXT-', font='Calibri 20', expand_x=True, justification='center')],
+    [sg.Text(comp5,key='-COMP 5 TEXT-', size=(25, 1), font='Calibri 20', expand_x=True, justification='center')
+     ,sg.Text(comp6,key='-COMP 6 TEXT-', size=(25, 1), font='Calibri 20', expand_x=True, justification='center')
+     ,sg.Text(comp7,key='-COMP 7 TEXT-', size=(25, 1), font='Calibri 20', expand_x=True, justification='center')
+     ,sg.Text(comp8,key='-COMP 8 TEXT-', size=(25, 1), font='Calibri 20', expand_x=True, justification='center')],
     [sg.Table(values=placeholder_df.values.tolist(),
                      headings=placeholder_df.columns.tolist(),
                      max_col_width=25,
@@ -195,7 +188,9 @@ window = sg.Window('Scoreviewer Beta',layout)
 
 page = 1
 
-## Event Loop
+################
+## Event Loop ##
+################
 while True:
     event, values = window.read()
 
@@ -216,25 +211,13 @@ while True:
         window.refresh()
 
         data = bd.read_logfile(path)
-        # df1 = bd.Vorgabe(data,'KKA KK-DamenKniginnen Orden KKA','KKA',1999.0) #check
-        # df2 = bd.Vorgabe(data,'KKA KK-Damen Jubi Orden KKA','KKA',2023.0) #check
-        # df3 =  bd.Best_Shot(data,'KKA Damen Vogelteil KKA','KKA')
-        # df4 = bd.Best_Shots(data,'KKA KK Auflage KKA','KKA',2) #check
-        # df5 = bd.Best_Shot(data,'KKA KK-Bundesorden KKA','KKA') #check
-        # df6 = bd.Vorgabe(data,'KKA Haspa D/H KKA','KKA',380.0) #check
-        # df7 = placeholder_df
-        # df8 = placeholder_df
-        # df9 = bd.Best_Shots(data,'LGA LG Auflage LGA','LGA',3) #check
-        # df10 = bd.Vorgabe(data,'KKA KK-Halsbandorden Dieter KKA','KKA',509.0) #check
-        # df11 = placeholder_df
-        # df12 = bd.Vorgabe(data,'LGA Mafia Pokal LGA','LGA',777.0) #check
 
-        df1 = bd.Best_Shot(data,'KKA KK-Ehrenpreisscheibe KKA','KKA') #TODO best_Ten
-        df2 = bd.Best_Shots(data,'KKA KK-Ehrenpreisscheibe KKA','KKA',2) #TODO best_Tens
-        df3 = bd.Best_Shots(data,'KKA KK Auflage KKA','KKA',2)
-        df4 = placeholder_df
+        df1 = bd.Best_Tens(data,'KKA KK-Ehrenpreisscheibe KKA','KKA',1) 
+        df2 = bd.Best_Tens(data,'KKA KK-Ehrenpreisscheibe KKA','KKA',2) #TODO beste 10er Serie
+        df3 = bd.Best_Tens(data,'KKA KK Auflage KKA','KKA',2) 
+        df4 = placeholder_df 
         df5 = bd.Vorgabe(data,'KKA KK-Halsbandorden Dieter KKA','KKA',509.0)
-        df6 = bd.Best_Shot(data,'KKA KK-Bundesorden KKA','KKA')
+        df6 = bd.Best_Tens(data,'KKA KK-Bundesorden KKA','KKA',1)
         df7 = bd.Best_Shots(data,'LGA LG Auflage LGA','LGA',3) 
         df8 = bd.Vorgabe(data,'LGA Mafia Pokal LGA','LGA',777.0)
         df9 = placeholder_df2 #TODO Bestmann normal
@@ -246,21 +229,21 @@ while True:
         df15 = bd.Vorgabe(data,'KKA KK-DamenKniginnen Orden KKA','KKA',1999.0)
         df16 = bd.Best_Shot(data,'KKA Vogelteil KKA','KKA')
         df17 = bd.Best_Shot(data,'KKA Damen Vogelteil KKA','KKA')
-        df18 = placeholder_df
-        df19 = placeholder_df
-        df20 = placeholder_df
-        df21 = placeholder_df
-        df22 = placeholder_df
-        df23 = placeholder_df
-        df24 = placeholder_df
-        df25 = placeholder_df
-        df26 = placeholder_df
-        df27 = placeholder_df
-        df28 = placeholder_df
-        df29 = placeholder_df
-        df30 = placeholder_df
-        df31 = placeholder_df
-        df32 = placeholder_df
+        df18 = placeholder_df # Vogelteil Jugend Bester Schuss
+        df19 = placeholder_df # Jugend LG-Auflage Beste 10en nach Ringen
+        df20 = placeholder_df # Jugend LG-Freihand Beste 10en nach Ringen
+        df21 = placeholder_df # Jugend Ehrenscheibe Bester Schuss
+        df22 = placeholder_df # Celebration-Pokal Vorgabe 324,0
+        df23 = placeholder_df # Jugend-Standarte-Pokal Beste 2 Schüsse
+        df24 = placeholder_df # Zapf-/Ausmarsch-Orden Beste 2 Schüsse
+        df25 = placeholder_df # Krystian-Dechsheimer-Orden Vorgabe 1995 Lichtpistole
+        df26 = placeholder_df # Licht-Glücksziel Vorgabe ???
+        df27 = placeholder_df # Licht-Auflage Beste Schüsse? Ringe?
+        df28 = placeholder_df # Bianca-Dechsheimer-Nadel Teiler über mehrere Schüsse unbekannter Teiler
+        df29 = placeholder_df # Haspa Lichtpunkt 
+        df30 = placeholder_df # Haspa Luftgewehr
+        df31 = placeholder_df # Bestmann Jugend
+        df32 = placeholder_df # Bestmann Licht
 
         if page == 1:
             window['-COMP 1 TEXT-'].update(comp1)

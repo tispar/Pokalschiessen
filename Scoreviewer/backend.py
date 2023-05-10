@@ -112,5 +112,35 @@ def Vorgabe(data,name,disctype,zielteiler):
 ## Beste Serie
     #TODO
 
+## Best Tens
+def Best_Tens(data, wettbewerb, disc, anzahl):
+    comp = data[data['Wettbewerb'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    comp = comp[comp['FullValue'] >= 10]
+    shooters = comp['Startnummer'].unique()
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Platz','Name', 'Teiler'])
+    
+    res = pd.DataFrame()
+
+    for shooter in shooters:
+        df = comp[comp['Startnummer'] == shooter]
+
+        if df.shape[0] >= anzahl:
+            best = df.loc[df['Teiler'].idxmin()]
+            best['Teiler'] = round(df['Teiler'].nsmallest(anzahl, keep='all').sum(), 1)
+            res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
+        
+    res = res[['Name', 'Teiler']]
+
+    res.sort_values(['Teiler'] , ascending=True, inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+    res['Platz'] = res.index
+    res = res[['Platz','Name', 'Teiler']]
+
+    return res
+
 ## Ehrenpreise
     # TODO
