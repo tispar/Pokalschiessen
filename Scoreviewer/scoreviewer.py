@@ -204,7 +204,7 @@ while True:
     if event in ('-EXIT-',sg.WIN_CLOSED):
         break
 
-    if event == '-REFRESH-'
+    if event == '-REFRESH-':
         ## informing the user
         window['-COMP 1 TEXT-'].update('Update läuft')
         window['-COMP 2 TEXT-'].update('Update läuft')
