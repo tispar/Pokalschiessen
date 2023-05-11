@@ -2,6 +2,8 @@ import json
 import pandas as pd
 from operator import index
 from posixpath import split
+import warnings
+warnings.filterwarnings("ignore")
 
 def read_logfile(path):
     shots = pd.DataFrame()
@@ -20,7 +22,9 @@ def read_logfile(path):
     },inplace=True)
     shots['Name'] = shots['Vorname']+ ' ' + shots['Nachname'].str.split(' ', 1).str[1]
     shots = shots[['ShotDateTime','Name','Startnummer','Range','Wettbewerb','Run','Count','FullValue','DecValue','Teiler','DiscType']]
+
     shots.reset_index(inplace=True, drop=True)
+    shots = shots[((shots['Range'] <= 6) & (shots['DiscType'] == 'KKA')) | ((shots['Range'] > 6) & (shots['DiscType'] != 'KKA'))]
     shots.index += 1
     return shots
 

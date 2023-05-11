@@ -14,6 +14,7 @@ event_name = 'Schützenfest 2023'
 now = dt.datetime.now()
 nowstring = now.strftime("%H:%M")
 updatetime = 5 #in minutes
+updateMiliSec = 3000
 update= now + dt.timedelta(minutes=1)
 updatestring = update.strftime("%H:%M")
 
@@ -187,7 +188,7 @@ layout = [
                      key= '-TABLE 8-' ,
                      font='Calibri 12',
                      pad=((25,20),(10,30)))],
-    [sg.Text('Letzte Aktualisierung:'),sg.Text('--:--', key='-TIME-'),sg.Text('Nächste Aktualisierung (dauert ca. 1min)->'),sg.Button('Jetzt', key='-REFRESH-'),sg.Push(),sg.Button('Exit',key='-EXIT-')]
+    [sg.Text('Letzte Aktualisierung: ',size=(16,1)),sg.Text('--:--', key='-TIME-',size=(10,1)),sg.Text('Nächste Aktualisierung um: ',size=(20,1)),sg.Text('--:--', key='-TIME 2-'),sg.Button('Jetzt', key='-REFRESH-', disabled=True,visible=False),sg.Push(),sg.Button('Exit',key='-EXIT-')]
 ]
 # TODO : Set Theme
 
@@ -199,12 +200,12 @@ page = 1
 ## Event Loop ##
 ################
 while True:
-    event, values = window.read()
+    event, values = window.read(timeout=updateMiliSec)
 
     if event in ('-EXIT-',sg.WIN_CLOSED):
         break
 
-    if event == '-REFRESH-':
+    if event == '-REFRESH-' or (sg.TIMEOUT_KEY and event not in ('-EXIT-',sg.WIN_CLOSED,'-SEITE 1-','-SEITE 2-','-SEITE 3-','-SEITE 4-')):
         ## informing the user
         window['-COMP 1 TEXT-'].update('Update läuft')
         window['-COMP 2 TEXT-'].update('Update läuft')
@@ -215,6 +216,11 @@ while True:
         window['-COMP 7 TEXT-'].update('Update läuft')
         window['-COMP 8 TEXT-'].update('Update läuft')
         window['-TIME-'].update('in progress')
+        window['-SEITE 1-'].update(disabled=True)
+        window['-SEITE 2-'].update(disabled=True)
+        window['-SEITE 3-'].update(disabled=True)
+        window['-SEITE 4-'].update(disabled=True)
+        window['-EXIT-'].update(disabled=True)
         window.refresh()
 
         data = bd.read_logfile(path)
@@ -269,6 +275,9 @@ while True:
             window['-TABLE 7-'].update(values=df7.values.tolist())
             window['-COMP 8 TEXT-'].update(comp8)
             window['-TABLE 8-'].update(values=df8.values.tolist())
+            window['-SEITE 2-'].update(disabled=False)
+            window['-SEITE 3-'].update(disabled=False)
+            window['-SEITE 4-'].update(disabled=False)
         elif page == 2:
             window['-COMP 1 TEXT-'].update(comp9)
             window['-TABLE 1-'].update(values=df9.values.tolist())
@@ -286,6 +295,9 @@ while True:
             window['-TABLE 7-'].update(values=df15.values.tolist())
             window['-COMP 8 TEXT-'].update(comp16)
             window['-TABLE 8-'].update(values=df16.values.tolist())
+            window['-SEITE 1-'].update(disabled=False)
+            window['-SEITE 3-'].update(disabled=False)
+            window['-SEITE 4-'].update(disabled=False)
         elif page == 3:
             window['-COMP 1 TEXT-'].update(comp17)
             window['-TABLE 1-'].update(values=df17.values.tolist())
@@ -303,6 +315,9 @@ while True:
             window['-TABLE 7-'].update(values=df23.values.tolist())
             window['-COMP 8 TEXT-'].update(comp24)
             window['-TABLE 8-'].update(values=df24.values.tolist())
+            window['-SEITE 1-'].update(disabled=False)
+            window['-SEITE 2-'].update(disabled=False)
+            window['-SEITE 4-'].update(disabled=False)
         else :
             window['-COMP 1 TEXT-'].update(comp25)
             window['-TABLE 1-'].update(values= df25.values.tolist())
@@ -320,12 +335,19 @@ while True:
             window['-TABLE 7-'].update(values=df31.values.tolist())
             window['-COMP 8 TEXT-'].update(comp32)
             window['-TABLE 8-'].update(values=df32.values.tolist())
+            window['-SEITE 1-'].update(disabled=False)
+            window['-SEITE 2-'].update(disabled=False)
+            window['-SEITE 3-'].update(disabled=False)
 
         now = dt.datetime.now()
         nowstring = now.strftime("%H:%M")
         window['-TIME-'].update(nowstring)
         update= dt.datetime.now() + dt.timedelta(minutes=5)
         updatestring = update.strftime("%H:%M")
+        window['-TIME 2-'].update(updatestring)
+        print(updatestring)
+        updateMiliSec = 300000
+        window['-EXIT-'].update(disabled=False)
         window.refresh()
 
     if event == '-SEITE 1-' and page != 1:
@@ -345,6 +367,10 @@ while True:
         window['-TABLE 7-'].update(values=df7.values.tolist())
         window['-COMP 8 TEXT-'].update(comp8)
         window['-TABLE 8-'].update(values=df8.values.tolist())
+        window['-SEITE 1-'].update(disabled=True)
+        window['-SEITE 2-'].update(disabled=False)
+        window['-SEITE 3-'].update(disabled=False)
+        window['-SEITE 4-'].update(disabled=False)
         window.refresh()
         page = 1
 
@@ -365,6 +391,10 @@ while True:
         window['-TABLE 7-'].update(values=df15.values.tolist())
         window['-COMP 8 TEXT-'].update(comp16)
         window['-TABLE 8-'].update(values=df16.values.tolist())
+        window['-SEITE 1-'].update(disabled=False)
+        window['-SEITE 2-'].update(disabled=True)
+        window['-SEITE 3-'].update(disabled=False)
+        window['-SEITE 4-'].update(disabled=False)
         window.refresh()
         page = 2
 
@@ -385,6 +415,10 @@ while True:
         window['-TABLE 7-'].update(values=df23.values.tolist())
         window['-COMP 8 TEXT-'].update(comp24)
         window['-TABLE 8-'].update(values=df24.values.tolist())
+        window['-SEITE 1-'].update(disabled=False)
+        window['-SEITE 2-'].update(disabled=False)
+        window['-SEITE 3-'].update(disabled=True)
+        window['-SEITE 4-'].update(disabled=False)
         window.refresh()
         page = 3
 
@@ -406,6 +440,10 @@ while True:
         window['-COMP 8 TEXT-'].update(comp32)
         window['-TABLE 8-'].update(values=df32.values.tolist())
         window.refresh()
+        window['-SEITE 1-'].update(disabled=False)
+        window['-SEITE 2-'].update(disabled=False)
+        window['-SEITE 3-'].update(disabled=False)
+        window['-SEITE 4-'].update(disabled=True)
         page = 4
 
 ## END
