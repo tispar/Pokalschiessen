@@ -230,7 +230,7 @@ while True:
         df9 = placeholder_df2 #TODO Bestmann normal
         df10 = placeholder_df2 #TODO Bestmann oldies
         df11 = placeholder_df2 #TODO Bestmann Damen
-        df12 = placeholder_df2 #TODO Beste_Ringzahl
+        df12 = bd.best_Rings(data,'LGA LG-Bestmann Spielmannszug LGA','LGA',5) 
         df13 = bd.Vorgabe(data,'KKA Haspa D/H KKA','KKA',380.0)
         df14 = bd.Vorgabe(data,'KKA KK-Damen Jubi Orden KKA','KKA',2023.0)
         df15 = bd.Vorgabe(data,'KKA KK-DamenKniginnen Orden KKA','KKA',1999.0)

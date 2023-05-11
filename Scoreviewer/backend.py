@@ -114,7 +114,7 @@ def Vorgabe(data,name,disctype,zielteiler):
 def Best_Tens(data, wettbewerb, disc, anzahl):
     comp = data[data['Wettbewerb'] == wettbewerb]
     comp = comp[comp['DiscType'] == disc]
-    comp = comp[comp['FullValue'] >= 10]
+    comp = comp[comp['DecValue'] >= 10.0]
     shooters = comp['Startnummer'].unique()
 
     if comp.shape[0] == 0:
@@ -144,4 +144,30 @@ def Best_Tens(data, wettbewerb, disc, anzahl):
     # TODO
 
 ## Beste Ringzahl
-    # TODO
+def best_Rings(data, wettbewerb, disc, anzahl):
+    comp = data[data['Wettbewerb'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Startnummer'].unique()
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Platz','Name', 'Teiler'])
+    
+    res = pd.DataFrame()
+
+    for shooter in shooters:
+        df = comp[comp['Startnummer'] == shooter]
+
+        if df.shape[0] >= anzahl:
+            best = df.iloc[-1]
+            best['DecValue'] = round(df['DecValue'].nsmallest(anzahl, keep='all').sum(), 1)
+            res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
+    
+    res = res[['Name','DecValue' ,'Teiler']]
+
+    res.sort_values(['DecValue','Teiler'] , ascending=[False,True], inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+    res['Platz'] = res.index
+    res = res[['Platz','Name', 'DecValue']]
+
+    return res
