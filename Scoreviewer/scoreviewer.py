@@ -4,7 +4,8 @@ import time
 import backend as bd
 import datetime as dt
 
-path = 'OUT-JSONInterface.log'
+path = 'OUT-JSONInterface.log' ##offline
+path = '//DESKTOP-6RH80LH/Jsonlive/OUT-JSONInterface.log' ##online
 
 ###################################
 ## Setting initialisation values ##
@@ -104,10 +105,10 @@ df32 = placeholder_df
 ########################
 layout = [
     [sg.Text('Willkommen zum '+ event_name, font='Calibri 28', expand_x=True, justification='center', pad=((10,10),(10,30)))],
-    [sg.Button('Seite 1',key='-SEITE 1-',pad=((10,10),(10,30)))
-     ,sg.Button('Seite 2',key='-SEITE 2-',pad=((10,10),(10,30)))
-     ,sg.Button('Seite 3',key='-SEITE 3-',pad=((10,10),(10,30)))
-     ,sg.Button('Seite 4',key='-SEITE 4-',pad=((10,10),(10,30)))],
+    [sg.Button('Seite 1',key='-SEITE 1-',pad=((10,10),(10,30)), font='Calibri 16')
+     ,sg.Button('Seite 2',key='-SEITE 2-',pad=((10,10),(10,30)), font='Calibri 16')
+     ,sg.Button('Seite 3',key='-SEITE 3-',pad=((10,10),(10,30)), font='Calibri 16')
+     ,sg.Button('Seite 4',key='-SEITE 4-',pad=((10,10),(10,30)), font='Calibri 16')],
     [sg.Text(comp1,key='-COMP 1 TEXT-', size=(25, 1), font='Calibri 20', expand_x=True, justification='center')
      ,sg.Text(comp2,key='-COMP 2 TEXT-',size=(25, 1), font='Calibri 20', expand_x=True, justification='center')
      ,sg.Text(comp3,key='-COMP 3 TEXT-', size=(25, 1), font='Calibri 20', expand_x=True, justification='center')
@@ -117,7 +118,7 @@ layout = [
                      max_col_width=25,
                      auto_size_columns=True,
                      justification='center',
-                     num_rows=10,
+                     num_rows=15,
                      key= '-TABLE 1-',
                      font='Calibri 12',
                      pad=((20,25),(10,30))),
@@ -126,7 +127,7 @@ layout = [
                      max_col_width=25,
                      auto_size_columns=True,
                      justification='center',
-                     num_rows=10,
+                     num_rows=15,
                      key= '-TABLE 2-' ,
                      font='Calibri 12',
                      pad=((25,25),(10,30))),
@@ -135,7 +136,7 @@ layout = [
                      max_col_width=25,
                      auto_size_columns=True,
                      justification='center',
-                     num_rows=10,
+                     num_rows=15,
                      key= '-TABLE 3-' ,
                      font='Calibri 12',
                      pad=((25,25),(10,30))),
@@ -144,7 +145,7 @@ layout = [
                      max_col_width=25,
                      auto_size_columns=True,
                      justification='center',
-                     num_rows=10,
+                     num_rows=15,
                      key= '-TABLE 4-' ,
                      font='Calibri 12',
                      pad=((25,20),(10,30)))],
@@ -166,7 +167,7 @@ layout = [
                      max_col_width=25,
                      auto_size_columns=True,
                      justification='center',
-                     num_rows=10,
+                     num_rows=15,
                      key= '-TABLE 6-' ,
                      font='Calibri 12',
                      pad=((25,25),(10,30))),
@@ -175,7 +176,7 @@ layout = [
                      max_col_width=25,
                      auto_size_columns=True,
                      justification='center',
-                     num_rows=10,
+                     num_rows=15,
                      key= '-TABLE 7-' ,
                      font='Calibri 12',
                      pad=((25,25),(10,30))),                 
@@ -184,7 +185,7 @@ layout = [
                      max_col_width=25,
                      auto_size_columns=True,
                      justification='center',
-                     num_rows=10,
+                     num_rows=15,
                      key= '-TABLE 8-' ,
                      font='Calibri 12',
                      pad=((25,20),(10,30)))],
@@ -192,7 +193,7 @@ layout = [
 ]
 # TODO : Set Theme
 
-window = sg.Window('Scoreviewer Beta',layout)
+window = sg.Window('Scoreviewer Beta',layout,no_titlebar=False)
 
 page = 1
 
@@ -225,14 +226,14 @@ while True:
 
         data = bd.read_logfile(path)
 
-        df1 = bd.Best_Tens(data,'KKA KK-Ehrenpreisscheibe KKA','KKA',1) 
+        df1 = bd.Ehrenscheibe(data,'KKA KK-Ehrenpreisscheibe KKA','KKA Vogelteil KKA') #Ehrenscheibe beste 10 Männer
         df2 = bd.Best_Tens(data,'KKA KK-Ehrenpreisscheibe KKA','KKA',2) #TODO beste 10er Serie
-        df3 = bd.Best_Tens(data,'KKA KK Auflage KKA','KKA',2) 
+        df3 = bd.Best_Tens(data,'KKA KK Auflage KKA','KKA',2) # KK-Auflage beste 2 10en
         df4 = placeholder_df 
-        df5 = bd.Vorgabe(data,'KKA KK-Halsbandorden Dieter KKA','KKA',509.0)
-        df6 = bd.Best_Tens(data,'KKA KK-Bundesorden KKA','KKA',1)
-        df7 = bd.Best_Shots(data,'LGA LG Auflage LGA','LGA',3) 
-        df8 = bd.Vorgabe(data,'LGA Mafia Pokal LGA','LGA',777.0)
+        df5 = bd.Vorgabe(data,'KKA KK-Halsbandorden Dieter KKA','KKA',509.0) # Vorgabe
+        df6 = bd.Best_Tens(data,'KKA KK-Bundesorden KKA','KKA',1) # Beste 10
+        df7 = bd.Best_Shots(data,'LGA LG Auflage LGA','LGA',3) # Beste 3 Schüsse
+        df8 = bd.Vorgabe(data,'LGA Mafia Pokal LGA','LGA',777.0) # Vorgabe
         df9 = placeholder_df2 #TODO Bestmann normal
         df10 = placeholder_df2 #TODO Bestmann oldies
         df11 = placeholder_df2 #TODO Bestmann Damen
@@ -242,19 +243,19 @@ while True:
         df15 = bd.Vorgabe(data,'KKA KK-DamenKniginnen Orden KKA','KKA',1999.0)
         df16 = bd.Best_Shot(data,'KKA Vogelteil KKA','KKA')
         df17 = bd.Best_Shot(data,'KKA Damen Vogelteil KKA','KKA')
-        df18 = placeholder_df # Vogelteil Jugend Bester Schuss
-        df19 = placeholder_df # Jugend LG-Auflage Beste 10en nach Ringen
-        df20 = placeholder_df # Jugend LG-Freihand Beste 10en nach Ringen
-        df21 = placeholder_df # Jugend Ehrenscheibe Bester Schuss
-        df22 = placeholder_df # Celebration-Pokal Vorgabe 324,0
-        df23 = placeholder_df # Jugend-Standarte-Pokal Beste 2 Schüsse
-        df24 = placeholder_df # Zapf-/Ausmarsch-Orden Beste 2 Schüsse
+        df18 = bd.Best_Shot(data,'LGA Jugend Vogelteil LGA','LGA') # Vogelteil Jugend Bester Schuss
+        df19 = bd.best_Rings(data,'LGA Jugend LG Auflage LGA','LGA',10)  # Jugend LG-Auflage Beste 10 Schuss nach Ringen
+        df20 = bd.best_Rings(data,'LG Jugend LG Freihand LG','LG',10) # Jugend LG-Freihand Beste 10en nach Ringen
+        df21 = bd.Best_Shot(data,'LGA Jugend Ehrenscheibe LGA','LGA') # Jugend Ehrenscheibe Bester Schuss 'LGA Jugend Ehrenscheibe LGA'
+        df22 = bd.Vorgabe(data,'LG Jugend Celebrations - Pokal LG','LG',324.0) # Celebration-Pokal Vorgabe 324,0 'LG Jugend Celebrations - Pokal LG'
+        df23 = bd.Best_Shots(data,'LGA Jugend Standarte Pokal LGA','LGA',2) # Jugend-Standarte-Pokal Beste 2 Schüsse
+        df24 = bd.Best_Shots(data,'LGA Jugend Zapf LGA','LGA',2) # Zapf-/Ausmarsch-Orden Beste 2 Schüsse 'LGA Jugend Zapf LGA'
         df25 = placeholder_df # Krystian-Dechsheimer-Orden Vorgabe 1995 Lichtpistole
         df26 = placeholder_df # Licht-Glücksziel Vorgabe ???
         df27 = placeholder_df # Licht-Auflage Beste Schüsse? Ringe?
         df28 = placeholder_df # Bianca-Dechsheimer-Nadel Teiler über mehrere Schüsse unbekannter Teiler
-        df29 = placeholder_df # Haspa Lichtpunkt 
-        df30 = placeholder_df # Haspa Luftgewehr
+        df29 = bd.Vorgabe(data,'LGA Haspa Licht LGA','LGA',380.0) # Haspa Lichtpunkt  
+        df30 = bd.Vorgabe(data,'LGA Haspa LG Jugend LGA','LGA',380.0)  # Haspa Luftgewehr 'LGA Haspa LG Jugend LGA'
         df31 = placeholder_df # Bestmann Jugend
         df32 = placeholder_df # Bestmann Licht
 

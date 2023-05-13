@@ -22,13 +22,15 @@ def read_logfile(path):
     },inplace=True)
     shots['Name'] = shots['Vorname']+ ' ' + shots['Nachname'].str.split(' ', 1).str[1]
     shots = shots[['ShotDateTime','Name','Startnummer','Range','Wettbewerb','Run','Count','FullValue','DecValue','Teiler','DiscType']]
-
     shots.reset_index(inplace=True, drop=True)
-    shots = shots[((shots['Range'] <= 6) & (shots['DiscType'] == 'KKA')) | ((shots['Range'] > 6) & (shots['DiscType'] != 'KKA'))]
     shots.index += 1
+    # Schüsse auf falscher Range herausfiltern
+    shots = shots[((shots['Range'] <= 6) & (shots['DiscType'] == 'KKA')) | ((shots['Range'] > 6) & (shots['DiscType'] != 'KKA'))]
     return shots
 
-## bester Schuss
+###################
+## bester Schuss ##
+###################
 def Best_Shot(data, wettbewerb, disc):
     comp = data[data['Wettbewerb'] == wettbewerb]
     comp = comp[comp['DiscType'] == disc]
@@ -53,7 +55,9 @@ def Best_Shot(data, wettbewerb, disc):
 
     return res
 
-## beste Schüsse
+###################
+## beste Schüsse ##
+###################
 def Best_Shots(data, wettbewerb, disc, anzahl):
     comp = data[data['Wettbewerb'] == wettbewerb]
     comp = comp[comp['DiscType'] == disc]
@@ -82,7 +86,9 @@ def Best_Shots(data, wettbewerb, disc, anzahl):
 
     return res
 
-## Vorgabe
+#######################
+## Vorgabe (1 Schuss ##
+#######################
 def Vorgabe(data,name,disctype,zielteiler):
     comp = data[data['Wettbewerb'] == name]
     comp = comp[comp['DiscType'] == disctype]
@@ -110,11 +116,14 @@ def Vorgabe(data,name,disctype,zielteiler):
         res.loc[res['Platz'] <= 3, 'Name'] = '???'
 
     return res
-
-## Beste Serie
+#################
+## Beste Serie ##
+#################
     #TODO
 
-## Best Tens
+###############
+## Best Tens ##
+###############
 def Best_Tens(data, wettbewerb, disc, anzahl):
     comp = data[data['Wettbewerb'] == wettbewerb]
     comp = comp[comp['DiscType'] == disc]
@@ -144,10 +153,70 @@ def Best_Tens(data, wettbewerb, disc, anzahl):
 
     return res
 
-## Ehrenpreise
-    # TODO
 
-## Beste Ringzahl
+##################
+## Ehrenscheibe ##
+##################
+def Ehrenscheibe(data, wettbewerb, pflicht):
+    comp = data[data['Wettbewerb'] == pflicht]
+    shooters = comp['Startnummer'].unique()
+    comp = data[data['Wettbewerb'] == wettbewerb]
+    comp = comp[comp['DecValue'] >= 10.0]
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Platz', 'Name', 'Ringzahl', 'Teiler' ])
+
+    res = pd.DataFrame()
+    for shooter in shooters:
+        df = comp[comp['Startnummer'] == shooter]
+        if df.shape[0] > 0:
+            best = df.loc[df['Teiler'].idxmin()]
+
+            res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
+
+    res = res[['Name', 'Teiler']]
+    res.sort_values(['Teiler'] , ascending=True, inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+    res['Platz'] = res.index
+    res = res[['Platz','Name', 'Teiler']]
+
+    return res
+
+###################
+## beste Schüsse ##
+###################
+def Best_Shots(data, wettbewerb, disc, anzahl):
+    comp = data[data['Wettbewerb'] == wettbewerb]
+    comp = comp[comp['DiscType'] == disc]
+    shooters = comp['Startnummer'].unique()
+
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Platz','Name', 'Teiler'])
+    
+    res = pd.DataFrame()
+
+    for shooter in shooters:
+        df = comp[comp['Startnummer'] == shooter]
+
+        if df.shape[0] >= anzahl:
+            best = df.loc[df['Teiler'].idxmin()]
+            best['Teiler'] = round(df['Teiler'].nsmallest(anzahl, keep='all').sum(), 1)
+            res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
+        
+    res = res[['Name', 'Teiler']]
+
+    res.sort_values(['Teiler'] , ascending=True, inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+    res['Platz'] = res.index
+    res = res[['Platz','Name', 'Teiler']]
+
+    return res
+
+######################################
+## Beste Ringzahl (nach x Schüssen) ##
+######################################
 def best_Rings(data, wettbewerb, disc, anzahl):
     comp = data[data['Wettbewerb'] == wettbewerb]
     comp = comp[comp['DiscType'] == disc]
@@ -175,3 +244,7 @@ def best_Rings(data, wettbewerb, disc, anzahl):
     res = res[['Platz','Name', 'DecValue']]
 
     return res
+
+##############
+## Bestmann ##
+##############
