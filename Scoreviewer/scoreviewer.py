@@ -5,7 +5,7 @@ import backend as bd
 import datetime as dt
 
 path = 'OUT-JSONInterface.log' ##offline
-path = '//DESKTOP-6RH80LH/Jsonlive/OUT-JSONInterface.log' ##online
+#path = '//DESKTOP-6RH80LH/Jsonlive/OUT-JSONInterface.log' ##online
 
 ###################################
 ## Setting initialisation values ##
@@ -158,7 +158,7 @@ layout = [
                      max_col_width=25,
                      auto_size_columns=True,
                      justification='center',
-                     num_rows=10,
+                     num_rows=15,
                      key= '-TABLE 5-' ,
                      font='Calibri 12',
                      pad=((20,25),(10,30))),
@@ -189,7 +189,7 @@ layout = [
                      key= '-TABLE 8-' ,
                      font='Calibri 12',
                      pad=((25,20),(10,30)))],
-    [sg.Text('Letzte Aktualisierung: ',size=(16,1)),sg.Text('--:--', key='-TIME-',size=(10,1)),sg.Text('Nächste Aktualisierung um: ',size=(20,1)),sg.Text('--:--', key='-TIME 2-'),sg.Button('Jetzt', key='-REFRESH-', disabled=True,visible=False),sg.Push(),sg.Button('Exit',key='-EXIT-')]
+    [sg.Text('Letzte Aktualisierung: ',size=(16,1)),sg.Text('--:--', key='-TIME-',size=(10,1)),sg.Text('Nächste Aktualisierung um: ',size=(20,1)),sg.Text('--:--', key='-TIME 2-'),sg.Button('Jetzt', key='-REFRESH-', disabled=True,visible=False),sg.Push(),sg.Button('Exit',key='-EXIT-', font='Calibri 16')]
 ]
 # TODO : Set Theme
 
@@ -227,16 +227,16 @@ while True:
         data = bd.read_logfile(path)
 
         df1 = bd.Ehrenscheibe(data,'KKA KK-Ehrenpreisscheibe KKA','KKA Vogelteil KKA') #Ehrenscheibe beste 10 Männer
-        df2 = bd.Best_Tens(data,'KKA KK-Ehrenpreisscheibe KKA','KKA',2) #TODO beste 10er Serie
+        df2 = bd.Best_Tens(data,'KKA KK-Ehrenpreisscheibe KKA','KKA',2) #TODO beste Serie
         df3 = bd.Best_Tens(data,'KKA KK Auflage KKA','KKA',2) # KK-Auflage beste 2 10en
-        df4 = placeholder_df 
+        df4 = bd.best_Ten_Series(data,'KKA KK-Zapf Orden KKA') 
         df5 = bd.Vorgabe(data,'KKA KK-Halsbandorden Dieter KKA','KKA',509.0) # Vorgabe
         df6 = bd.Best_Tens(data,'KKA KK-Bundesorden KKA','KKA',1) # Beste 10
         df7 = bd.Best_Shots(data,'LGA LG Auflage LGA','LGA',3) # Beste 3 Schüsse
         df8 = bd.Vorgabe(data,'LGA Mafia Pokal LGA','LGA',777.0) # Vorgabe
-        df9 = placeholder_df2 #TODO Bestmann normal
-        df10 = placeholder_df2 #TODO Bestmann oldies
-        df11 = placeholder_df2 #TODO Bestmann Damen
+        df9 = bd.bestmann(data,['KKA KK-Ehrenpreisscheibe KKA','KKA KK Auflage KKA','KKA KK-Zapf Orden KKA','LGA LG Auflage LGA'],'KKA Vogelteil KKA',min_age=0,max_age=50) #TODO Bestmann normal 50 Jahre und Jünger
+        df10 = bd.bestmann(data,['KKA KK-Ehrenpreisscheibe KKA','KKA KK Auflage KKA','KKA KK-Zapf Orden KKA','LGA LG Auflage LGA'],'KKA Vogelteil KKA',min_age=51,max_age=120) #TODO Bestmann oldies 51 Jahre und älter 
+        df11 = bd.bestmann(data,['KKA KK Auflage KKA','KKA KK-Zapf Orden KKA','LGA LG Auflage LGA'],'KKA Damen Vogelteil KKA') #TODO Bestmann Damen
         df12 = bd.best_Rings(data,'LGA LG-Bestmann Spielmannszug LGA','LGA',5) 
         df13 = bd.Vorgabe(data,'KKA Haspa D/H KKA','KKA',380.0)
         df14 = bd.Vorgabe(data,'KKA KK-Damen Jubi Orden KKA','KKA',2023.0)

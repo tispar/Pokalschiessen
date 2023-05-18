@@ -18,10 +18,11 @@ def read_logfile(path):
                            'Shooter.Lastname' : 'Nachname',
                            'Distance' : 'Teiler',
                            'Shooter.Identification' : 'Startnummer',
+                           'Shooter.Birthyear' : 'Geburtsjahr',
                            'MenuItem.MenuPointName' : 'Wettbewerb'
     },inplace=True)
     shots['Name'] = shots['Vorname']+ ' ' + shots['Nachname'].str.split(' ', 1).str[1]
-    shots = shots[['ShotDateTime','Name','Startnummer','Range','Wettbewerb','Run','Count','FullValue','DecValue','Teiler','DiscType']]
+    shots = shots[['ShotDateTime','Name','Geburtsjahr','Startnummer','Range','Wettbewerb','Run','Count','FullValue','DecValue','Teiler','DiscType']]
     shots.reset_index(inplace=True, drop=True)
     shots.index += 1
     # Schüsse auf falscher Range herausfiltern
@@ -112,14 +113,57 @@ def Vorgabe(data,name,disctype,zielteiler):
     res.index += 1
     res['Platz'] = res.index
     res = res[['Platz','Name', 'Abstand']]
-    if name == 'LGA Mafia Pokal LGA' and res.shape[0] >= 3:
-        res.loc[res['Platz'] <= 3, 'Name'] = '???'
+    #if name == 'LGA Mafia Pokal LGA' and res.shape[0] >= 3:
+    #    res.loc[res['Platz'] <= 3, 'Name'] = '???'
 
     return res
 #################
 ## Beste Serie ##
 #################
-    #TODO
+def best_Ten_Series(data,wettbewerb):
+    comp = data[data['Wettbewerb'] == wettbewerb]
+    shooters = comp['Startnummer'].unique()
+    if comp.shape[0] == 0:
+        return pd.DataFrame(columns=['Platz','Name', 'Teiler'])
+    
+    res = pd.DataFrame()
+    for shooter in shooters:
+        df = comp[comp['Startnummer'] == shooter]
+        bestRinge = 0
+        bestTeiler = 20000
+        reihen = len(df) // 2
+        df.reset_index(inplace=True, drop=True)
+  
+        for i in range(0,reihen):
+            #print('This '+str(i*2) +'  next: '+str(i*2 +1))
+            d1 = df[df.index == (i*2)]
+            v1 = int(d1['FullValue'])
+            teiler1 = int(d1['Teiler'])
+            d2 = df[df.index == (i*2 +1)]
+            v2 = int(d2['FullValue'])
+            teiler2= int(d2['Teiler'])
+            #print('comparing index '+(str(i*2)+' and '+(str(i*2+1))))
+            #print(' values: '+str(v1)+' and '+str(v2))
+            if v1 >= 10 and v2 >= 10:
+                Teiler = teiler1 + teiler2
+                if Teiler < bestTeiler:
+                    bestTeiler = Teiler
+               
+            
+        if bestTeiler != 20000:
+            best = df.loc[df['Teiler'].idxmin()]
+            best['Teiler'] = bestTeiler
+            res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
+    
+    res.sort_values(['Teiler'] , ascending=True, inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+    res['Platz'] = res.index
+    res = res[['Platz','Name', 'Teiler']]        
+
+    return res
+
+
 
 ###############
 ## Best Tens ##
@@ -229,10 +273,10 @@ def best_Rings(data, wettbewerb, disc, anzahl):
 
     for shooter in shooters:
         df = comp[comp['Startnummer'] == shooter]
-
+        #print(df)
         if df.shape[0] >= anzahl:
             best = df.iloc[-1]
-            best['DecValue'] = round(df['DecValue'].nsmallest(anzahl, keep='all').sum(), 1)
+            best['DecValue'] = round(df['DecValue'].nlargest(anzahl, keep='all').sum(), 1)
             res = pd.concat([res, best.to_frame().transpose()], axis=0, ignore_index=True)
     
     res = res[['Name','DecValue' ,'Teiler']]
@@ -248,3 +292,34 @@ def best_Rings(data, wettbewerb, disc, anzahl):
 ##############
 ## Bestmann ##
 ##############
+def bestmann(data:pd.DataFrame , wettbewerbe: list , pflicht: str, min_age = 0, max_age = 120):
+    shooterslist = data[data['Wettbewerb'] == pflicht]
+    shooterslist = shooterslist[((shooterslist['Geburtsjahr']-2023)*(-1) >= min_age) & ((shooterslist['Geburtsjahr']-2023)*(-1) <= max_age)]
+    shooters = shooterslist['Startnummer'].unique()
+    res = pd.DataFrame()
+    for shooter in shooters:
+        teiler = 0
+        s = data[data['Startnummer'] == shooter]
+        s.reset_index(inplace=True, drop=True)
+        for wettbewerb in wettbewerbe:
+            df = s[(s['Wettbewerb'] == wettbewerb)]
+            if df.shape[0] == 0:
+                teiler = teiler+ 10000
+            else:
+                best = round(df['Teiler'].nsmallest(1, keep='all').sum(), 1)
+                teiler = teiler + best
+        teiler = round(teiler,1)
+        row = s[s.index == 0]
+        row['Teiler'] = teiler
+
+        res = pd.concat([res, row], axis=0, ignore_index=True)
+    
+    res = res[['Name' ,'Teiler']]
+
+    res.sort_values(['Teiler'] , ascending=[True], inplace=True)
+    res.reset_index(inplace=True, drop=True)
+    res.index += 1
+    res['Platz'] = res.index
+    res = res[['Platz','Name', 'Teiler']]   
+
+    return res     
